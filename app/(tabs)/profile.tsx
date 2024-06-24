@@ -1,10 +1,10 @@
 import { Dimensions, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import React from 'react'
-import { Link, Stack } from 'expo-router'
-import { MaterialIcons } from '@expo/vector-icons'
-import { makeShareable } from 'react-native-reanimated/lib/typescript/reanimated2/shareables'
+import { Link, Stack, useNavigation } from 'expo-router'
 
 const Profile = () => { 
+    const navigation = useNavigation();
+
   return (
     <View style={styles.container}>
         <View style={styles.headerOption}>
@@ -20,8 +20,9 @@ const Profile = () => {
         </View>
       </View>
 
-      <Link href={'../profiledetails'} asChild>
-        <TouchableOpacity style={styles.boxProfileDetail}>
+      <TouchableOpacity 
+      onPress={() => navigation.navigate("ProfileDetails")}
+      style={styles.boxProfileDetail}>
             <View style={styles.boxUser}>
                 <Image style={{width:30, height: 30}} source={require('./img/userIcon.png')}/>
             </View>
@@ -32,10 +33,10 @@ const Profile = () => {
                 marginLeft: 20
             }}>Profile Details</Text>
         </TouchableOpacity>
-      </Link>
 
-      <Link href={'../payment'} asChild>
-        <TouchableOpacity style={styles.boxPaymentDetail}>
+        <TouchableOpacity 
+        onPress={()=> navigation.navigate("Payment")}
+        style={styles.boxPaymentDetail}>
             <View style={styles.boxUser}>
                 <Image style={{width:30, height: 30}} source={require('./img/credit-card.png')}/>
             </View>
@@ -46,7 +47,6 @@ const Profile = () => {
                 marginLeft: 20
             }}>Payment</Text>
         </TouchableOpacity>
-      </Link>
 
       
 
@@ -88,7 +88,9 @@ const Profile = () => {
         }}>My Selling Request Order</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity style={styles.boxLogout}>
+      <TouchableOpacity 
+      onPress={() => navigation.navigate("Login")}
+      style={styles.boxLogout}>
         <View style={styles.boxUser}>
             <Image style={{width:30, height: 30}} source={require('./img/logout.png')}/>
         </View>

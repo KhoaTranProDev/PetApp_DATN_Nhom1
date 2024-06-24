@@ -1,28 +1,52 @@
-import { Dimensions, Image, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
+import { Dimensions, Image, StyleSheet, Text, TextInput, ToastAndroid, TouchableOpacity, View } from 'react-native'
 import React, { useState } from 'react'
 import { Link, Stack } from 'expo-router'
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { useNavigation } from '@react-navigation/native';
+import AxiosHelper from '../util/AxiosHelper';
 
 const Login = () => {
+    const navigation = useNavigation();
     const [showPassword, setshowPassword] = useState(false);
+    const [userName, setUserName] = useState("");
+    const [passwordUser, setPasswordUser] = useState("");
 
     const toggleShowPassword = () => {
         setshowPassword(!showPassword);
     }
+
+    const handleLogin = async() => {
+        try {
+            const response = await AxiosHelper.post("/users/login",{
+                username: userName,
+                password: passwordUser
+            });
+            if(response.data.status == 1){
+                ToastAndroid.show("Đăng nhập thành công!", ToastAndroid.SHORT);
+                navigation.navigate("HomeScreen");
+            } else {
+                ToastAndroid.show("Đăng nhập thất bại!", ToastAndroid.SHORT);
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
   return (
     <View style={styles.container}>
-      <Stack.Screen options={{
-        headerShown: false,
-      }}/>
       <Text style={styles.title}>Login</Text>
       <View style={styles.box}>
-        <TextInput style={styles.textInput} placeholder='Email'/>
+        <TextInput
+        style={styles.textInput} 
+        onChangeText={setUserName}
+        value={userName}
+        placeholder='UserName'/>
         <View style={styles.containerPassword}> 
-                <TextInput 
-                    // Set secureTextEntry prop to hide  
-                    //password when showPassword is false 
+                <TextInput  
                     secureTextEntry={!showPassword} 
                     style={styles.input} 
+                    onChangeText={setPasswordUser}
+                    value={passwordUser}
                     placeholder="Enter Password"
                     placeholderTextColor="#aaa"
                 /> 
@@ -34,16 +58,17 @@ const Login = () => {
                     onPress={toggleShowPassword} 
                 /> 
             </View>
-        <Link href={'home'} asChild>
-            <TouchableOpacity style={styles.ContinueButton}>
-                <Text style={{
-                    fontSize: 18,
-                    fontWeight: '600',
-                    color: '#000'
-                }}>Continue</Text>
-            </TouchableOpacity>
-        </Link>
-        <TouchableOpacity>
+        <TouchableOpacity 
+        onPress={handleLogin}
+        style={styles.ContinueButton}>
+            <Text style={{
+                fontSize: 18,
+                fontWeight: '600',
+                color: '#000'
+            }}>Continue</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+        onPress={() => navigation.navigate("ForgotPass")}>
             <Text style={{
             fontSize: 15,
             fontWeight: '400',
@@ -56,7 +81,7 @@ const Login = () => {
         <TouchableOpacity style={styles.fbButton}>
             <Image 
             style={{width: 30, height: 30, margin: 10}}
-            source={require('./(tabs)/img/facebook.png')}/>
+            source={require('../(tabs)/img/facebook.png')}/>
             <Text style={{
                 alignSelf: 'center',
                 fontSize: 16,
@@ -67,7 +92,7 @@ const Login = () => {
         <TouchableOpacity style={styles.ggButton}>
             <Image 
             style={{width: 30, height: 30, margin: 10}}
-            source={require('./(tabs)/img/google.png')}/>
+            source={require('../(tabs)/img/google.png')}/>
             <Text style={{
                 alignSelf: 'center',
                 fontSize: 16,
@@ -81,15 +106,13 @@ const Login = () => {
                 fontWeight: "300",
                 color: "#fff"
             }}>Don't have an account?</Text>
-            <Link href={'signup'} asChild>
-                <TouchableOpacity>
+            <TouchableOpacity onPress={() => navigation.navigate("SignUp")}>
                     <Text style={{
                         fontSize: 16,
                         fontWeight: "700",
                         color: "#FFC300"
                     }}>Sign Up</Text>
-                </TouchableOpacity>
-            </Link>
+            </TouchableOpacity>
         </View>
       </View>
     </View>
@@ -103,7 +126,7 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     title:{
-        marginTop: 200,
+        marginTop: 150,
         marginHorizontal: 20,
         fontSize: 35,
         fontWeight: "900"

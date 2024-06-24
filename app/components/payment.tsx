@@ -1,13 +1,21 @@
 import { Image, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
 import React from 'react'
-import { Stack } from 'expo-router'
+import { Stack, useNavigation } from 'expo-router'
 
 const Payment = () => {
+  const navigation = useNavigation();
   return (
     <View style={styles.container}>
-      <Stack.Screen options={{
-        title: "Payment",
-      }}/>
+      <TouchableOpacity 
+      onPress={() => navigation.goBack()}
+      style={styles.backButton}>
+        <Image style={{width: 40,height: 40}} source={require("../(tabs)/img/goBack.png")}/>
+        <Text style={{
+          fontSize: 16,
+          lineHeight: 34,
+          fontWeight: "500"
+        }}>Go Back</Text>
+      </TouchableOpacity>
       <Text style={styles.title}>Add payment medthod</Text>
       <Text style={{
         marginHorizontal: 15,
@@ -35,7 +43,7 @@ const Payment = () => {
                 marginLeft: 10,
                 marginTop: 2
             }}
-            source={require('./(tabs)/img/visa.png')}/>
+            source={require('../(tabs)/img/visa.png')}/>
         </View>
       </View>
 
@@ -69,17 +77,23 @@ export default Payment
 const styles = StyleSheet.create({
     container:{
         flex: 1,
+        justifyContent: 'center',
+    },
+    backButton:{
+      flexDirection: 'row',
+      gap: 10,
+      marginHorizontal: 15,
     },
     title:{
         fontSize: 24,
         fontWeight: "600",
-        marginTop: 15,
+        marginTop: 35,
         marginHorizontal: 15,
         color: "#C70039"
       },
       CardNamebox:{
         marginHorizontal: 15,
-        marginTop: 40
+        marginTop: 25
       },
       inputStyle:{
         borderWidth: 1,
@@ -126,7 +140,7 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         height: 50,
         marginHorizontal: 15,
-        marginTop: 100,
+        marginTop: 50,
         borderRadius: 8,
         justifyContent: 'center',
         alignItems: 'center',

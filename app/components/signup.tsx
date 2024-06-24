@@ -1,35 +1,65 @@
-import { Image, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
+import { Image, StyleSheet, Text, TextInput, ToastAndroid, TouchableOpacity, View } from 'react-native'
 import React, { useState } from 'react'
 import { Link, Stack } from 'expo-router'
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { useNavigation } from '@react-navigation/native';
+import AxiosHelper from '../util/AxiosHelper';
 
 const SignUp = () => {
+    const navigation = useNavigation();
 
     const [showPassword, setshowPassword] = useState(false);
+    const [emailUser, setEmailUser] = useState("");
+    const [userName, setUserName] = useState("");
+    const [password, setPassword] = useState("");
 
     const toggleShowPassword = () => {
         setshowPassword(!showPassword);
     }
 
+    const handleRegisterAccount = async() => {
+        try {
+            const response = await AxiosHelper.post("/users/add",{
+                email: emailUser,
+                username: userName,
+                password: password
+            });
+            console.log(response);
+            if(response.data.status == 1){
+                ToastAndroid.show("Đăng ký tài khoản thành công!", ToastAndroid.SHORT);
+                navigation.navigate("Login");
+            } else {
+                ToastAndroid.show("Đăng ký tài khoản thất bại!", ToastAndroid.SHORT);
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
   return (
     <View style={styles.container}>
-      <Stack.Screen options={{
-        headerShown: false,
-      }}/>
       <Text style={styles.title}>Sign Up</Text>
       <View style={styles.box}>
         <View style={styles.headerContent}>
           <Text style={styles.titleContent}>Looks like you don't have an account.</Text>
           <Text style={styles.titleContent}>Let's create a new account for you.</Text>
         </View>
-        <TextInput style={styles.textInput} placeholder='Name'/>
-        <TextInput style={styles.textInput} placeholder='Email'/>
+        <TextInput 
+        style={styles.textInput}
+        onChangeText={setUserName}
+        value={userName} 
+        placeholder='Name'/>
+        <TextInput 
+        style={styles.textInput}
+        onChangeText={setEmailUser}
+        value={emailUser}
+        placeholder='Email'/>
         <View style={styles.containerPassword}> 
-                <TextInput 
-                    // Set secureTextEntry prop to hide  
-                    //password when showPassword is false 
+                <TextInput  
                     secureTextEntry={!showPassword} 
                     style={styles.input} 
+                    onChangeText={setPassword}
+                    value={password}
                     placeholder="Enter Password"
                     placeholderTextColor="#aaa"
                 /> 
@@ -43,7 +73,7 @@ const SignUp = () => {
             </View>
         <Text style={styles.textContent}>By selecting Create Account below, i agree to</Text>
         <Text style={styles.textBoldContent}>Terms of Service & Privacy Policy</Text>
-        <TouchableOpacity style={styles.CreateButton}>
+        <TouchableOpacity style={styles.CreateButton} onPress={handleRegisterAccount}>
                 <Text style={{
                     fontSize: 18,
                     fontWeight: '600',
@@ -56,15 +86,13 @@ const SignUp = () => {
                 fontWeight: "300",
                 color: "#fff"
             }}>Already have an account?</Text>
-            <Link href={'login'} asChild>
-                <TouchableOpacity>
+            <TouchableOpacity onPress={() => navigation.navigate("Login")}>
                     <Text style={{
                         fontSize: 16,
                         fontWeight: "700",
                         color: "#FFC300"
                     }}>Login</Text>
                 </TouchableOpacity>
-            </Link>
         </View>
       </View>
     </View>
@@ -98,7 +126,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   title:{
-    marginTop: 200,
+    marginTop: 150,
     marginHorizontal: 20,
     fontSize: 35,
     fontWeight: "900"

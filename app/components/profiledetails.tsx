@@ -1,15 +1,23 @@
 import { Dimensions, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import React from 'react'
-import { Stack } from 'expo-router'
+import { Stack, useNavigation } from 'expo-router'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { Ionicons } from '@expo/vector-icons'
 
 const ProfileDetails = () => {
+  const navigation = useNavigation();
   return (
     <View style={styles.container}>
-      <Stack.Screen options={{
-        title: 'Back',
-      }}/>
+      <TouchableOpacity 
+      onPress={() => navigation.goBack()}
+      style={styles.backButton}>
+        <Image style={{width: 40,height: 40}} source={require("../(tabs)/img/goBack.png")}/>
+        <Text style={{
+          fontSize: 16,
+          lineHeight: 34,
+          fontWeight: "500"
+        }}>Go Back</Text>
+      </TouchableOpacity>
       <Text style={styles.title}>Profile Details</Text>
       <TouchableOpacity style={{
         alignItems: 'center',
@@ -39,7 +47,7 @@ const ProfileDetails = () => {
           }}>Khoa Tran</Text>
           <Image 
           style={{width: 25, height: 25}}
-          source={require('./(tabs)/img/forward.png')}/>
+          source={require('../(tabs)/img/forward.png')}/>
         </TouchableOpacity>
       </View>
 
@@ -55,7 +63,7 @@ const ProfileDetails = () => {
           }}>khoatldps24667@fpt.edu.vn</Text>
           <Image 
           style={{width: 25, height: 25}}
-          source={require('./(tabs)/img/forward.png')}/>
+          source={require('../(tabs)/img/forward.png')}/>
         </TouchableOpacity>
       </View>
 
@@ -71,7 +79,7 @@ const ProfileDetails = () => {
           }}>10 February, 2003</Text>
           <Image 
           style={{width: 25, height: 25}}
-          source={require('./(tabs)/img/forward.png')}/>
+          source={require('../(tabs)/img/forward.png')}/>
         </TouchableOpacity>
       </View>
 
@@ -84,12 +92,18 @@ export default ProfileDetails
 const styles = StyleSheet.create({
     container:{
         flex: 1,
+        justifyContent: 'center'
+    },
+    backButton:{
+      flexDirection: 'row',
+      gap: 10,
+      marginHorizontal: 15,
     },
     title:{
-      fontSize: 24,
-      fontWeight: "600",
+      fontSize: 28,
+      fontWeight: "700",
       marginTop: 15,
-      marginHorizontal: 15,
+      textAlign: 'center'
     },
     horizontalLine:{
       borderWidth: 0.8,
