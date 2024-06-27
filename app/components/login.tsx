@@ -40,7 +40,7 @@ const Login = () => {
         style={styles.textInput} 
         onChangeText={setUserName}
         value={userName}
-        placeholder='UserName'/>
+        placeholder='Enter Username'/>
         <View style={styles.containerPassword}> 
                 <TextInput  
                     secureTextEntry={!showPassword} 

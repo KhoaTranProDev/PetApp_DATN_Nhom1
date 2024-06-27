@@ -12,6 +12,8 @@ import Profile from './(tabs)/profile';
 import ProfileDetails from './components/profiledetails';
 import Payment from './components/payment';
 import ForgotPass from './components/forgotpass';
+import VerifyOTP from './components/verifyotpcode';
+import SetPassword from './components/setpassword';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -64,6 +66,8 @@ const Page = () => {
         <Stack.Screen name='Login' component={Login}/>
         <Stack.Screen name='SignUp' component={SignUp}/>
         <Stack.Screen name='ForgotPass' component={ForgotPass}/>
+        <Stack.Screen name='VerifyOTP' component={VerifyOTP}/>
+        <Stack.Screen name='SetPassword' component={SetPassword}/>
         <Stack.Screen name='HomeScreen' component={HomeScreen}/>
       </Stack.Navigator>
     </NavigationContainer>

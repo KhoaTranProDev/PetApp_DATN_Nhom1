@@ -48,12 +48,12 @@ const SignUp = () => {
         style={styles.textInput}
         onChangeText={setUserName}
         value={userName} 
-        placeholder='Name'/>
+        placeholder='Enter Usernam'/>
         <TextInput 
         style={styles.textInput}
         onChangeText={setEmailUser}
         value={emailUser}
-        placeholder='Email'/>
+        placeholder='Enter Email'/>
         <View style={styles.containerPassword}> 
                 <TextInput  
                     secureTextEntry={!showPassword} 
@@ -122,10 +122,10 @@ const styles = StyleSheet.create({
     icon: { 
         marginLeft: 10, 
     },
-  container:{
+container:{
     flex: 1,
   },
-  title:{
+title:{
     marginTop: 150,
     marginHorizontal: 20,
     fontSize: 35,
