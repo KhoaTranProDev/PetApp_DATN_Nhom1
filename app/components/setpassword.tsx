@@ -2,12 +2,19 @@ import { Image, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'reac
 import React, { useState } from 'react'
 import { useNavigation } from 'expo-router';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { useRoute } from '@react-navigation/native';
+import AxiosHelper from '../util/AxiosHelper';
+import Toast from 'react-native-toast-message';
 
 const SetPassword = () => {
     const navigation = useNavigation();
+    const route = useRoute();
+    const { email, otpReset } = route.params;
 
     const [showPassword, setshowPassword] = useState(false);
     const [showRetypePassword, setshowRetypePassword] = useState(false);
+    const [newPasswordUser, setNewPasswordUser] = useState("");
+    const [newPasswordRetype, setNewPasswordRetype] = useState("");
 
     const toggleShowPassword = () => {
         setshowPassword(!showPassword);
@@ -15,6 +22,43 @@ const SetPassword = () => {
 
     const toggleShowRetypePassword = () => {
         setshowRetypePassword(!showRetypePassword);
+    }
+
+    const validateEmptyInput = () => {
+      Toast.show({
+        type: "error", //error, info
+        text1: "Warning:",
+        text2: "Please do not leave information blank!",
+        autoHide: true,
+        visibilityTime: 3000,
+      });
+    }
+
+    const unMatchingPasswordMessage = () => {
+      Toast.show({
+        type: "info", //error, info
+        text1: "Checking:",
+        text2: "Your password does not match, please check again!",
+        autoHide: true,
+        visibilityTime: 3000,
+      });
+    }
+
+    const handleResetPassword = async() => {
+      if(newPasswordUser.length == 0 || newPasswordRetype.length == 0){
+        validateEmptyInput();
+      } else if (!(newPasswordUser == newPasswordRetype)){
+        unMatchingPasswordMessage();
+      }
+      /*try {
+        const response = await AxiosHelper.post("/users/reset-password",{
+          email: email,
+          otp: otpReset,
+          newPassword: newPasswordUser
+        });
+      } catch (error) {
+        console.log(error);
+      }*/
     }
 
   return (
@@ -29,6 +73,7 @@ const SetPassword = () => {
           fontWeight: "500"
         }}>Back to Verify</Text>
       </TouchableOpacity>
+      <Toast/>
       <Text style={styles.title}>Set Password</Text>
       <View style={styles.box}>
         <View style={styles.headerContent}>
@@ -41,7 +86,9 @@ const SetPassword = () => {
         <View style={styles.containerPassword}> 
                 <TextInput  
                     secureTextEntry={!showPassword} 
-                    style={styles.input} 
+                    style={styles.input}
+                    onChangeText={setNewPasswordUser}
+                    value={newPasswordUser}
                     placeholder="Enter New Password"
                     placeholderTextColor="#aaa"
                 /> 
@@ -58,6 +105,8 @@ const SetPassword = () => {
                 <TextInput  
                     secureTextEntry={!showRetypePassword} 
                     style={styles.input} 
+                    onChangeText={setNewPasswordRetype}
+                    value={newPasswordRetype}
                     placeholder="Re-type New Password"
                     placeholderTextColor="#aaa"
                 /> 
@@ -71,6 +120,7 @@ const SetPassword = () => {
             </View>
 
           <TouchableOpacity 
+          onPress={handleResetPassword}
           style={styles.submitButton}>
             <Text style={{
               fontSize: 18,
@@ -90,7 +140,7 @@ const styles = StyleSheet.create({
         flex: 1,
       },
     title:{
-        marginTop: 50,
+        marginTop: 80,
         marginHorizontal: 20,
         fontSize: 35,
         fontWeight: "900"

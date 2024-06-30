@@ -8,9 +8,10 @@ import Toast from 'react-native-toast-message'
 const VerifyOTP = () => {
     const navigation = useNavigation();
     const route = useRoute();
-    const { data } = route.params;
+    const { data, otp } = route.params;
 
     const [otpCode, setOtpCode] = useState("");
+    const [otpFromBase, setOtpFromBase] = useState(otp);
     const [isPinReady, setIsPinReady] = useState(false);
     const maximumCodeLength = 6;
 
@@ -18,9 +19,9 @@ const VerifyOTP = () => {
       Toast.show({
         type: "success", //error, info
         text1: "Notification",
-        text2: "Đã gửi thành công mã OTP đến Email của bạn !",
+        text2: "Successfully sending OTP code to your Email !",
         autoHide: true,
-        visibilityTime: 2500,
+        visibilityTime: 3000,
   
       });
     }
@@ -29,17 +30,32 @@ const VerifyOTP = () => {
       Toast.show({
         type: "error", //error, info
         text1: "Notification",
-        text2: "Không gửi được mã OTP đến Email của bạn ! Vui lòng kiểm tra lại.",
+        text2: "Cannot verify your OTP code ! Please check again.",
         autoHide: true,
-        visibilityTime: 2500,
+        visibilityTime: 3000,
+  
+      });
+    }
+
+    const showErrorOTPToast = () => {
+      Toast.show({
+        type: "error", //error, info
+        text1: "Notification",
+        text2: "OTP nhập không trùng khớp, vui lòng kiểm tra lại!",
+        autoHide: true,
+        visibilityTime: 3000,
   
       });
     }
 
 
     const handleVerifyCode = async() => {
-      console.log(data);
-       //navigation.navigate("SetPassword");
+      console.log(data, otpFromBase);
+      if(otpFromBase == otpCode){
+        navigation.navigate("SetPassword",{ email: data, otpReset: otpFromBase });
+      } else {
+        showErrorOTPToast();
+      }
     }
 
     const resendOTP = async() => {
@@ -49,6 +65,7 @@ const VerifyOTP = () => {
         });
         if(response.data.success == true){
           showSuccessToast();
+          setOtpFromBase(response.data.OTP);
         } else  if (response.data.success == false){
           showErrorToast();
         }
@@ -70,6 +87,7 @@ const VerifyOTP = () => {
           fontWeight: "500"
         }}>Back to Recovery</Text>
       </TouchableOpacity>
+      <Toast/>
       <Text style={styles.title}>Verify OTP Code</Text>
       <View style={styles.box}>
         <View style={styles.headerContent}>
@@ -123,7 +141,7 @@ const styles = StyleSheet.create({
         flex: 1,
       },
     title:{
-        marginTop: 50,
+        marginTop: 80,
         marginHorizontal: 20,
         fontSize: 35,
         fontWeight: "900"

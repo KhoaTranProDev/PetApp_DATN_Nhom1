@@ -12,8 +12,8 @@ const ForgotPass = () => {
   const showSuccessToast = () => {
     Toast.show({
       type: "success", //error, info
-      text1: "Notification",
-      text2: "Đã gửi thành công mã OTP đến Email của bạn !",
+      text1: "Notification:",
+      text2: "Successfully sending OTP code to your Email!",
       autoHide: true,
       visibilityTime: 2500,
 
@@ -23,8 +23,8 @@ const ForgotPass = () => {
   const showErrorToast = () => {
     Toast.show({
       type: "error", //error, info
-      text1: "Notification",
-      text2: "Không gửi được mã OTP đến Email của bạn ! Vui lòng kiểm tra lại.",
+      text1: "Warning:",
+      text2: "Cannot sending OTP code to your Email ! Please check.",
       autoHide: true,
       visibilityTime: 2500,
 
@@ -38,7 +38,7 @@ const ForgotPass = () => {
       });
       if(response.data.success == true){
         showSuccessToast();
-        navigation.navigate("VerifyOTP", {data: emailUser});
+        navigation.navigate("VerifyOTP", {data: emailUser, otp: response.data.OTP});
       } else  if (response.data.success == false){
         showErrorToast();
       }
@@ -106,7 +106,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
 title:{
-    marginTop: 50,
+    marginTop: 80,
     marginHorizontal: 20,
     fontSize: 35,
     fontWeight: "900"
