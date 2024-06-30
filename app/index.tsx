@@ -10,6 +10,7 @@ import Home from './(tabs)/home';
 import Favourite from './(tabs)/favourite';
 import Profile from './(tabs)/profile';
 import ProfileDetails from './components/profiledetails';
+import WelcomApp from './components/welcomapp';
 import Payment from './components/payment';
 import ForgotPass from './components/forgotpass';
 import VerifyOTP from './components/verifyotpcode';
@@ -60,9 +61,10 @@ function ProfileScreen (){
 
 const Page = () => {
   return (
-    // <Login/>
+    // <WelcomApp/>
     <NavigationContainer independent={true}>
-      <Stack.Navigator initialRouteName='Login' screenOptions={{headerShown: false}}>
+      <Stack.Navigator initialRouteName='WelcomApp' screenOptions={{headerShown: false}}>
+      <Stack.Screen name='Welcom' component={WelcomApp}/>
         <Stack.Screen name='Login' component={Login}/>
         <Stack.Screen name='SignUp' component={SignUp}/>
         <Stack.Screen name='ForgotPass' component={ForgotPass}/>

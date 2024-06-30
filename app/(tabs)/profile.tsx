@@ -1,10 +1,10 @@
-import { Dimensions, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
-import React from 'react'
+import { Alert, Dimensions, Image, Modal, Pressable, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import React, { useState } from 'react'
 import { Link, Stack, useNavigation } from 'expo-router'
 
 const Profile = () => { 
     const navigation = useNavigation();
-
+    const [modalVisible, setModalVisible] = useState(false);
   return (
     <View style={styles.container}>
         <View style={styles.headerOption}>
@@ -76,7 +76,8 @@ const Profile = () => {
         }}>Feedback</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity style={styles.boxFeedbackDetail}>
+      <TouchableOpacity style={styles.boxFeedbackDetail}
+       onPress={() => setModalVisible(true)}>
         <View style={styles.boxUser}>
             <Image style={{width:30, height: 30}} source={require('./img/selling.png')}/>
         </View>
@@ -87,6 +88,27 @@ const Profile = () => {
             marginLeft: 20
         }}>My Selling Request Order</Text>
       </TouchableOpacity>
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={() => {
+          Alert.alert('Modal has been closed.');
+          setModalVisible(!modalVisible);
+        }}>
+        <View style={styles.centeredView}>
+          <View style={styles.modalView}>
+            <Text style={styles.modalText}>Giống </Text>
+            <Text style={styles.modalText}>Tên </Text>
+            <Text style={styles.modalText}>Tuổi </Text>
+            <Text style={styles.modalText}>Cân Nặng </Text>
+            <TouchableOpacity style={[styles.button, styles.buttonClose]}
+              onPress={() => setModalVisible(!modalVisible)}>
+                <Text style={styles.textStyle}>Submit</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
 
       <TouchableOpacity 
       onPress={() => navigation.navigate("Login")}
@@ -200,4 +222,42 @@ const styles = StyleSheet.create({
         width: Dimensions.get('window').width,
         height: 60,
     },
+    centeredView: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginTop: 22,
+      },
+      modalView: {
+        margin: 20,
+        backgroundColor: 'white',
+        borderRadius: 20,
+        padding: 35,
+        alignItems: 'center',
+        shadowColor: '#000',
+        shadowOffset: {
+          width: 0,
+          height: 2,
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 4,
+        elevation: 5,
+      },
+      modalText: {
+      marginBottom: 15,
+      textAlign: 'center',
+      },
+      button: {
+        borderRadius: 20,
+        padding: 10,
+        elevation: 2,
+      },
+      buttonClose: {
+        backgroundColor: '#2196F3',
+      },
+      textStyle: {
+        color: 'white',
+        fontWeight: 'bold',
+        textAlign: 'center',
+      },
 })
