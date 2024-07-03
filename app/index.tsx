@@ -1,6 +1,6 @@
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import React from 'react'
-import { FontAwesome, Ionicons, MaterialIcons } from '@expo/vector-icons'
+import { Feather, FontAwesome, Ionicons, MaterialIcons } from '@expo/vector-icons'
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import Login from './components/login'
@@ -14,6 +14,8 @@ import Payment from './components/payment';
 import ForgotPass from './components/forgotpass';
 import VerifyOTP from './components/verifyotpcode';
 import SetPassword from './components/setpassword';
+import App from './components/DetailsScreen';
+import DetailsItemList from './components/DetailsItemList';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -21,18 +23,20 @@ const Tab = createBottomTabNavigator();
 function HomeScreen (){
   return (
     <Tab.Navigator 
-    initialRouteName='Home'
+    initialRouteName='HomeFragment'
     screenOptions={{headerShown: false}}>
-      <Tab.Screen name='Home' component={Home}
+      <Tab.Screen name='HomeFragment' component={HomeFragment}
       options={{
+        title: "Home",
         tabBarIcon: ({color}) => (
           <Ionicons name='home' size={28} color={color} />
         )
       }}/>
       <Tab.Screen name='Favourite' component={Favourite}
       options={{
+        title: "Cart",
         tabBarIcon: ({color}) => (
-          <MaterialIcons name='favorite' size={28} color={color}/>
+          <Feather name='shopping-cart' size={28} color={color}/>
         )
       }}/>
       <Tab.Screen name='ProfileScreen' component={ProfileScreen}
@@ -43,6 +47,17 @@ function HomeScreen (){
         )
       }}/>
     </Tab.Navigator>
+  )
+}
+
+function HomeFragment (){
+  return(
+    <Stack.Navigator
+    initialRouteName='Profile'
+    screenOptions={{headerShown: false}}>
+      <Stack.Screen name='Home' component={Home}/>
+      <Stack.Screen name='DetailsItemList' component={DetailsItemList}/>
+    </Stack.Navigator>
   )
 }
 
@@ -60,7 +75,7 @@ function ProfileScreen (){
 
 const Page = () => {
   return (
-    // <Login/>
+    // <App/>
     <NavigationContainer independent={true}>
       <Stack.Navigator initialRouteName='Login' screenOptions={{headerShown: false}}>
         <Stack.Screen name='Login' component={Login}/>

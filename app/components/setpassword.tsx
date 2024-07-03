@@ -1,4 +1,4 @@
-import { Image, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
+import { Alert, Image, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
 import React, { useState } from 'react'
 import { useNavigation } from 'expo-router';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
@@ -13,6 +13,7 @@ const SetPassword = () => {
 
     const [showPassword, setshowPassword] = useState(false);
     const [showRetypePassword, setshowRetypePassword] = useState(false);
+    const [isOnCharacter, setIsOnCharacter] = useState(false);
     const [newPasswordUser, setNewPasswordUser] = useState("");
     const [newPasswordRetype, setNewPasswordRetype] = useState("");
 
@@ -45,20 +46,35 @@ const SetPassword = () => {
     }
 
     const handleResetPassword = async() => {
-      if(newPasswordUser.length == 0 || newPasswordRetype.length == 0){
-        validateEmptyInput();
-      } else if (!(newPasswordUser == newPasswordRetype)){
-        unMatchingPasswordMessage();
-      }
-      /*try {
+      // if(newPasswordUser.length == 0 || newPasswordRetype.length == 0){
+      //   validateEmptyInput();
+      // } 
+
+      // if(newPasswordUser.length < 8 || newPasswordRetype.length < 8){
+      //   setIsOnCharacter(false);
+      // } else {
+      //   setIsOnCharacter(true);
+      // }
+      
+      // if(!(newPasswordUser == newPasswordRetype)){
+      //   unMatchingPasswordMessage();
+      // }
+      console.log(email, otpReset, newPasswordUser);
+      try {
         const response = await AxiosHelper.post("/users/reset-password",{
           email: email,
           otp: otpReset,
           newPassword: newPasswordUser
         });
+        if(response.data.success == true){
+          Alert.alert("Notification", "You have successfully changed your password!");
+          navigation.navigate("Login");
+        } else {
+          Alert.alert("Notification", "Something went wrong, please try again later!");
+        }
       } catch (error) {
         console.log(error);
-      }*/
+      }
     }
 
   return (
@@ -118,7 +134,11 @@ const SetPassword = () => {
                     onPress={toggleShowRetypePassword} 
                 /> 
             </View>
-
+            <Text style={{
+              marginHorizontal: 20,
+              marginTop: 10,
+              color: isOnCharacter ? "#50C878"  : "red"
+            }}>Required at least 8-characters</Text>
           <TouchableOpacity 
           onPress={handleResetPassword}
           style={styles.submitButton}>
@@ -158,7 +178,7 @@ const styles = StyleSheet.create({
     box:{
         marginHorizontal: 15,
         marginTop: 20,
-        height: "40%",
+        height: "45%",
         backgroundColor: '#900C3F',
         borderRadius: 15,
     },
