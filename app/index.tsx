@@ -15,6 +15,7 @@ import Payment from './components/payment';
 import ForgotPass from './components/forgotpass';
 import VerifyOTP from './components/verifyotpcode';
 import SetPassword from './components/setpassword';
+import Cart from './components/cart';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -61,18 +62,18 @@ function ProfileScreen (){
 
 const Page = () => {
   return (
-    // <WelcomApp/>
-    <NavigationContainer independent={true}>
-      <Stack.Navigator initialRouteName='WelcomApp' screenOptions={{headerShown: false}}>
-      <Stack.Screen name='Welcom' component={WelcomApp}/>
-        <Stack.Screen name='Login' component={Login}/>
-        <Stack.Screen name='SignUp' component={SignUp}/>
-        <Stack.Screen name='ForgotPass' component={ForgotPass}/>
-        <Stack.Screen name='VerifyOTP' component={VerifyOTP}/>
-        <Stack.Screen name='SetPassword' component={SetPassword}/>
-        <Stack.Screen name='HomeScreen' component={HomeScreen}/>
-      </Stack.Navigator>
-    </NavigationContainer>
+    <WelcomApp/>
+    // <NavigationContainer independent={true}>
+    //   <Stack.Navigator initialRouteName='WelcomApp' screenOptions={{headerShown: false}}>
+    //   <Stack.Screen name='Welcom' component={WelcomApp}/>
+    //     <Stack.Screen name='Login' component={Login}/>
+    //     <Stack.Screen name='SignUp' component={SignUp}/>
+    //     <Stack.Screen name='ForgotPass' component={ForgotPass}/>
+    //     <Stack.Screen name='VerifyOTP' component={VerifyOTP}/>
+    //     <Stack.Screen name='SetPassword' component={SetPassword}/>
+    //     <Stack.Screen name='HomeScreen' component={HomeScreen}/>
+    //   </Stack.Navigator>
+    // </NavigationContainer>
   )
 }
 
