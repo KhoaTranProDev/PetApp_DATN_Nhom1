@@ -16,20 +16,21 @@ const Login = () => {
     }
 
     const handleLogin = async() => {
-        try {
-            const response = await AxiosHelper.post("/users/login",{
-                username: userName,
-                password: passwordUser
-            });
-            if(response.data.status == 1){
-                ToastAndroid.show("Đăng nhập thành công!", ToastAndroid.SHORT);
-                navigation.navigate("HomeScreen");
-            } else {
-                ToastAndroid.show("Đăng nhập thất bại!", ToastAndroid.SHORT);
-            }
-        } catch (error) {
-            console.log(error);
-        }
+        // try {
+        //     const response = await AxiosHelper.post("/users/login",{
+        //         username: userName,
+        //         password: passwordUser
+        //     });
+        //     if(response.data.status == 1){
+        //         ToastAndroid.show("Đăng nhập thành công!", ToastAndroid.SHORT);
+        //         navigation.navigate("HomeScreen");
+        //     } else {
+        //         ToastAndroid.show("Đăng nhập thất bại!", ToastAndroid.SHORT);
+        //     }
+        // } catch (error) {
+        //     console.log(error);
+        // }
+        navigation.navigate("HomeScreen");
     }
 
   return (
