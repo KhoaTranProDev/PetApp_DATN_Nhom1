@@ -7,7 +7,7 @@ import Login from './components/login'
 import SignUp from './components/signup';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Home from './(tabs)/home';
-import Favourite from './(tabs)/favourite';
+import Favourite from './(tabs)/cart';
 import Profile from './(tabs)/profile';
 import ProfileDetails from './components/profiledetails';
 import Payment from './components/payment';
@@ -16,6 +16,7 @@ import VerifyOTP from './components/verifyotpcode';
 import SetPassword from './components/setpassword';
 import App from './components/DetailsScreen';
 import DetailsItemList from './components/DetailsItemList';
+import Cart from './(tabs)/cart'
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -32,7 +33,7 @@ function HomeScreen (){
           <Ionicons name='home' size={28} color={color} />
         )
       }}/>
-      <Tab.Screen name='Favourite' component={Favourite}
+      <Tab.Screen name='Cart' component={Cart}
       options={{
         title: "Cart",
         tabBarIcon: ({color}) => (

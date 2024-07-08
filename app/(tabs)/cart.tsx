@@ -2,7 +2,7 @@ import { Dimensions, Image, StyleSheet, Text, TouchableOpacity, View } from 'rea
 import React from 'react'
 import { Stack } from 'expo-router'
 
-const Favourite = () => {
+const Cart = () => {
   return (
     <View style={styles.container}>
       <Text>Hello World</Text>
@@ -10,7 +10,7 @@ const Favourite = () => {
   )
 }
 
-export default Favourite
+export default Cart
 
 const styles = StyleSheet.create({
     container:{

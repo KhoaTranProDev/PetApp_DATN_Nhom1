@@ -81,7 +81,7 @@ const Home = () => {
 
 
 
-  function handleShowAllPress() {
+  function handleShowAllDogPress() {
     navigation.navigate('DetailsItemList');
   }
 
@@ -109,17 +109,17 @@ const Home = () => {
           />
         )
         }
-        <Text style={styles.petText}>Tên loài: {item.name}</Text>
-        <Text style={styles.petText}>Loại: {item.alike}</Text>
-        <Text style={styles.petText}>Tuổi: {item.yearold}</Text>
+        <Text style={styles.petText}>Pet name: {item.name}</Text>
+        <Text style={styles.petText}>Pet species: {item.alike}</Text>
+        <Text style={styles.petText}>Age: {item.yearold}</Text>
 
       </View>
     );
   };
 
-  const dogData = pets.filter(pet => pet.alike === 'Chó');
-  const meoData = pets.filter(pet => pet.alike === 'Mèo');
-  const chimData = pets.filter(pet => pet.alike === 'Chim');
+  const dogData = pets.filter(pet => pet.idspecies === '667062a9c593ca6c8b204c30');
+  const meoData = pets.filter(pet => pet.idspecies === '66706603c593ca6c8b204c35');
+  const chimData = pets.filter(pet => pet.idspecies === '66706625c593ca6c8b204c36');
   
   return (
     <SafeAreaView style={styles.body}>
@@ -154,8 +154,8 @@ const Home = () => {
         <View style={styles.containerHeader}>
           <Text style={styles.text}>Dog</Text>
           <TouchableOpacity
-          onPress={handleShowAllPress}>
-            <Text style={styles.text}>Show all</Text>
+          onPress={handleShowAllDogPress}>
+            <Text style={styles.showAllText}>Show all ➤</Text>
           </TouchableOpacity>
           {/* <TouchableOpacity onPress={() => handleShowAllPress('dog')}>
           <Text>Show all dogs</Text>
@@ -179,7 +179,9 @@ const Home = () => {
           <View style={styles.containerBanner}>
         <View style={styles.containerHeader}>
           <Text style={styles.text}>Cat</Text>
-          <Text style={styles.text}>Show all</Text>
+          <TouchableOpacity>
+            <Text style={styles.showAllText}>Show all ➤</Text>
+          </TouchableOpacity>
         </View>
          <View style={styles.bannerItem}>
         <ScrollView
@@ -199,7 +201,9 @@ const Home = () => {
           <View style={styles.containerBanner}>
         <View style={styles.containerHeader}>
           <Text style={styles.text}>Bird</Text>
-          <Text style={styles.text}>Show all</Text>
+          <TouchableOpacity>
+            <Text style={styles.showAllText}>Show all ➤</Text>
+          </TouchableOpacity>
         </View>
          <View style={styles.bannerItem}>
         <ScrollView
@@ -334,6 +338,12 @@ const styles = StyleSheet.create({
   },
   scrollViewContent1:{
     paddingHorizontal: 20,
+  },
+  showAllText:{
+    fontSize: 16,
+    fontWeight: "400",
+    marginTop: 15,
+    marginRight: 15,
   }
 });
 

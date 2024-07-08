@@ -38,9 +38,10 @@ function DetailsItemList(): React.JSX.Element {
   const [pets, setPets] = useState<Pet[]>([]);
   const [images, setImages] = useState<ImageData[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
+  const [favButton, setFavButton] = useState("#fff");
   
-  const handleTrendingPress = () => {
-
+  const handleFilterButton = () => {
+    
   };
   useEffect(() => {
     const fetchData = async () => {
@@ -75,7 +76,8 @@ function DetailsItemList(): React.JSX.Element {
             style={styles.petImage}
           />
         )}
-        <TouchableOpacity style={{
+        <TouchableOpacity 
+        style={{
           position: 'absolute',
         }}>
           <Image 
@@ -83,7 +85,7 @@ function DetailsItemList(): React.JSX.Element {
             position: 'absolute',
             left: 125,
             top: 10,
-            tintColor: "white",
+            tintColor: favButton,
           }}
           source={require('./image/favorite.png')}/>
         </TouchableOpacity>
@@ -98,15 +100,16 @@ function DetailsItemList(): React.JSX.Element {
             <Text style={{
               fontWeight: "400",
               fontSize: 20
-            }}>- {item.describe}</Text>
+            }}>- {item.alike}</Text>
             </Text>
+          <Text style={styles.petText}>Age: {item.yearold} yearold</Text>
           <Text style={styles.petText}>Price: {item.price} VND</Text>
         </View>
       </View>
     );
   };
 
-  const dogData = pets.filter(pet => pet.alike === 'Chó');
+  const dogData = pets.filter(pet => pet.idspecies === '667062a9c593ca6c8b204c30');
 
   return (
     <View style={styles.body}>

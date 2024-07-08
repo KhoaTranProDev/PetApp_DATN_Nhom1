@@ -18,11 +18,23 @@ const ChangeImage: React.FC = () => {
     },
     {
       id: "02",
-      image: require("./image/dog2.jpg"),
+      image: require("./image/cat1.jpg"),
     },
     {
       id: "03",
+      image: require("./image/dog2.jpg"),
+    },
+    {
+      id: "04",
+      image: require("./image/cat2.jpeg"),
+    },
+    {
+      id: "05",
       image: require("./image/dog4.jpg"),
+    },
+    {
+      id: "06",
+      image: require("./image/cat3.jpg"),
     },
   ];
 
