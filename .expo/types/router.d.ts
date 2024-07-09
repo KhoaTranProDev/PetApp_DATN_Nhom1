@@ -3,7 +3,7 @@ import type { ReactNode } from 'react';
 import type { TextProps, GestureResponderEvent } from 'react-native';
 
 export namespace ExpoRouter {
-  type StaticRoutes = `/` | `/(tabs)/cart` | `/(tabs)/home` | `/(tabs)/profile` | `/_sitemap` | `/cart` | `/components/ChangeScreen` | `/components/DetailsItemList` | `/components/DetailsScreen` | `/components/OTP/OTPInput` | `/components/OTP/Styles` | `/components/forgotpass` | `/components/login` | `/components/payment` | `/components/profiledetails` | `/components/setpassword` | `/components/signup` | `/components/verifyotpcode` | `/home` | `/profile` | `/util/AxiosHelper`;
+  type StaticRoutes = `/` | `/(tabs)/cart` | `/(tabs)/home` | `/(tabs)/profile` | `/_sitemap` | `/cart` | `/components/ChangeScreen` | `/components/DetailCatList` | `/components/DetailsItemList` | `/components/DetailsScreen` | `/components/OTP/OTPInput` | `/components/OTP/Styles` | `/components/forgotpass` | `/components/login` | `/components/payment` | `/components/profiledetails` | `/components/setpassword` | `/components/signup` | `/components/verifyotpcode` | `/home` | `/profile` | `/util/AxiosHelper`;
   type DynamicRoutes<T extends string> = never;
   type DynamicRouteTemplate = never;
 

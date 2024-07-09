@@ -85,6 +85,10 @@ const Home = () => {
     navigation.navigate('DetailsItemList');
   }
 
+  function handleShowListCat() {
+    navigation.navigate("DetailCatList");
+  }
+
   const dogImgData = imgURL.filter(img => img.idpet === "667062a9c593ca6c8b204c30");
   const dogImgURL = dogImgData.map(item => item.img);
   const catImgData = imgURL.filter(img => img.idpet === "66706603c593ca6c8b204c35");
@@ -126,9 +130,12 @@ const Home = () => {
       <ScrollView style={styles.scrollView}>
         <View style={styles.headerBaner}>
           <Text style={styles.text}>Welcome back!</Text>
-          <Image
-          source={{uri:"https://i.pinimg.com/736x/56/3f/0b/563f0b714e90f9195c1d63b09f5fb8e1.jpg"}}
-          style={styles.imageBanner}/>
+          <TouchableOpacity
+          onPress={() => navigation.navigate("Profile")}>
+            <Image
+            source={{uri:"https://i.pinimg.com/736x/56/3f/0b/563f0b714e90f9195c1d63b09f5fb8e1.jpg"}}
+            style={styles.imageBanner}/>
+          </TouchableOpacity>
         </View>
         
         <View style={styles.containerOption}>
@@ -154,7 +161,7 @@ const Home = () => {
         <View style={styles.containerHeader}>
           <Text style={styles.text}>Dog</Text>
           <TouchableOpacity
-          onPress={handleShowAllDogPress}>
+          onPress={() => handleShowAllDogPress()}>
             <Text style={styles.showAllText}>Show all ➤</Text>
           </TouchableOpacity>
           {/* <TouchableOpacity onPress={() => handleShowAllPress('dog')}>
@@ -179,7 +186,8 @@ const Home = () => {
           <View style={styles.containerBanner}>
         <View style={styles.containerHeader}>
           <Text style={styles.text}>Cat</Text>
-          <TouchableOpacity>
+          <TouchableOpacity
+          onPress={() => handleShowListCat()}>
             <Text style={styles.showAllText}>Show all ➤</Text>
           </TouchableOpacity>
         </View>

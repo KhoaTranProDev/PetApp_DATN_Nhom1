@@ -34,7 +34,7 @@ interface ImageData {
   img: string;
 }
 
-function DetailsItemList(): React.JSX.Element {
+function DetailCatList(): React.JSX.Element {
   const navigation = useNavigation();
   const [pets, setPets] = useState<Pet[]>([]);
   const [images, setImages] = useState<ImageData[]>([]);
@@ -78,18 +78,20 @@ function DetailsItemList(): React.JSX.Element {
     fetchData();
   }, []);
 
-  const dogImgData = images.filter(
-    (img) => img.idpet === "667062a9c593ca6c8b204c30"
+
+
+  const catImgData = images.filter(
+    (img) => img.idpet === "66706603c593ca6c8b204c35"
   );
-  const dogImgURL = dogImgData.map((item) => item.img);
+  const catImgURL = catImgData.map((item) => item.img);
 
   const renderPetItem = ({ item }: { item: Pet }) => {
     // const petImage = images.find(image => image._id === item.idimage);
 
     return (
       <View style={styles.item}>
-        {item.idspecies == "667062a9c593ca6c8b204c30" && (
-          <Image source={{ uri: String(dogImgURL) }} style={styles.petImage} />
+        {item.idspecies == "66706603c593ca6c8b204c35" && (
+          <Image source={{ uri: String(catImgURL) }} style={styles.petImage} />
         )}
         <TouchableOpacity
           style={{
@@ -142,7 +144,7 @@ function DetailsItemList(): React.JSX.Element {
           <Text style={styles.petText}>
             <Text
               style={{
-                color: "#CC5500",
+                color: "green",
               }}
             >
               Price:{" "}
@@ -154,8 +156,8 @@ function DetailsItemList(): React.JSX.Element {
     );
   };
 
-  const dogData = fullData.filter(
-    (pet) => pet.idspecies === "667062a9c593ca6c8b204c30"
+  const catData = fullData.filter(
+    (pet) => pet.idspecies === "66706603c593ca6c8b204c35"
   );
 
   return (
@@ -210,7 +212,7 @@ function DetailsItemList(): React.JSX.Element {
               color: "#000",
             }}
           >
-            Current Dog List
+            Current Cat List
           </Text>
           <TouchableOpacity onPress={() => setmodalVisible(true)}>
             <AntDesign name="filter" size={25} />
@@ -231,7 +233,7 @@ function DetailsItemList(): React.JSX.Element {
           <View style={styles.bannerItem}>
             <View style={styles.petsContainer}>
               <FlatList
-                data={dogData}
+                data={catData}
                 renderItem={renderPetItem}
                 keyExtractor={(item) => item._id}
                 contentContainerStyle={styles.scrollViewContent1}
@@ -458,4 +460,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default DetailsItemList;
+export default DetailCatList;

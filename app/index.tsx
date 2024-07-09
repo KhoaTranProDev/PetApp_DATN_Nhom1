@@ -7,7 +7,6 @@ import Login from './components/login'
 import SignUp from './components/signup';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Home from './(tabs)/home';
-import Favourite from './(tabs)/cart';
 import Profile from './(tabs)/profile';
 import ProfileDetails from './components/profiledetails';
 import Payment from './components/payment';
@@ -17,6 +16,7 @@ import SetPassword from './components/setpassword';
 import App from './components/DetailsScreen';
 import DetailsItemList from './components/DetailsItemList';
 import Cart from './(tabs)/cart'
+import DetailCatList from './components/DetailCatList';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -58,6 +58,7 @@ function HomeFragment (){
     screenOptions={{headerShown: false}}>
       <Stack.Screen name='Home' component={Home}/>
       <Stack.Screen name='DetailsItemList' component={DetailsItemList}/>
+      <Stack.Screen name='DetailCatList' component={DetailCatList}/>
     </Stack.Navigator>
   )
 }
