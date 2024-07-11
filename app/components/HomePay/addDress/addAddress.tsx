@@ -2,9 +2,10 @@ import { Image, ScrollView, StyleSheet, Switch, Text, TextInput, TouchableOpacit
 import React, { useState } from 'react'
 import MapView, { Marker } from 'react-native-maps'
 import Geocoder from 'react-native-geocoding'
-import { REACT_APP_GOOGLE_MAP_API_KEY } from '@env'
+// import { REACT_APP_GOOGLE_MAP_API_KEY } from '@env'
 
-Geocoder.init(REACT_APP_GOOGLE_MAP_API_KEY);
+// Geocoder.init(REACT_APP_GOOGLE_MAP_API_KEY);
+Geocoder.init("REACT_APP_GOOGLE_MAP_API_KEY");
 
 interface Coordinates {
     latitude: number;
