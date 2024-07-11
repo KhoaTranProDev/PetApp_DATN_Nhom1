@@ -6,8 +6,11 @@ import {
   View,
   FlatList,
   Alert,
+  Modal,
+  TextInput,
+  Button,
 } from "react-native";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 // data
 import { DataCart } from "./Data";
@@ -19,6 +22,8 @@ import { styles } from "./styles/cartScreen";
 import Swipeable from "react-native-gesture-handler/Swipeable";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import CheckBox from "expo-checkbox";
+import { getCartAll } from "../components/services/cart";
+import SendNewPostModal from "./modals/cart.newposts";
 
 const groupItemsByUser = (data: any) => {
   const grouped = data.reduce((acc: any, item: any) => {
@@ -51,6 +56,19 @@ const CartScreens: React.FC<{ navigation: any }> = (props) => {
   );
   const [totalPrice, setTotalPrice] = useState(calculateTotalPrice(DataCart));
   const [totalPriceTxt, setTotalPriceTxt] = useState(0);
+  const [cartData, setCartData] = useState([]);
+  const [modalVisibleNewPost, setModalVisibleNewPost] = useState(false);
+
+  const onGetCartAll = async () => {
+    try {
+      const res = await getCartAll();
+      setCartData(res);
+    } catch (error) {
+      console.log("Lỗi onGetCartAll ở cart (tabs): ", error);
+    }
+  };
+
+  console.log("cartData", cartData);
 
   const handleDelete = (id: string, name: string) => {
     Alert.alert(
@@ -226,7 +244,7 @@ const CartScreens: React.FC<{ navigation: any }> = (props) => {
             <View style={styles.frameAllTotal}>
               <TouchableOpacity
                 style={styles.btnTru}
-                onPress={() => decreaseQuantity(product.id)}
+                // onPress={() => decreaseQuantity(product.id)}
               >
                 <Text
                   style={{
@@ -251,7 +269,7 @@ const CartScreens: React.FC<{ navigation: any }> = (props) => {
               </Text>
               <TouchableOpacity
                 style={[styles.btnTru, { marginLeft: 20 }]}
-                onPress={() => increaseQuantity(product.id)}
+                // onPress={() => increaseQuantity(product.id)}
               >
                 <Text
                   style={{
@@ -304,6 +322,10 @@ const CartScreens: React.FC<{ navigation: any }> = (props) => {
     </View>
   );
 
+  useEffect(() => {
+    onGetCartAll();
+  }, []);
+
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <View style={styles.ContainerMain}>
@@ -325,10 +347,10 @@ const CartScreens: React.FC<{ navigation: any }> = (props) => {
           >
             Giỏ hàng
           </Text>
-          <TouchableOpacity>
+          <TouchableOpacity onPress={() => setModalVisibleNewPost(true)}>
             <Image
-              style={{ marginTop: 15, width: 28, height: 28 }}
-              source={require("./img/chat_50px.png")}
+              style={{ marginTop: 15, width: 35, height: 35 }}
+              source={require("./img/goodnotes_50px.png")}
             />
           </TouchableOpacity>
         </View>
@@ -377,6 +399,17 @@ const CartScreens: React.FC<{ navigation: any }> = (props) => {
           </View>
         </View>
       </View>
+      {/* modal */}
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={modalVisibleNewPost}
+        onRequestClose={() => {
+          setModalVisibleNewPost(!modalVisibleNewPost);
+        }}
+      >
+        <SendNewPostModal cloneModal={() => setModalVisibleNewPost(false)} />
+      </Modal>
     </GestureHandlerRootView>
   );
 };

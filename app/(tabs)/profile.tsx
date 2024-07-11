@@ -17,6 +17,7 @@ const Profile = () => {
         <View style={styles.middleBoxAccount}>
             <Text style={styles.nameText}>Khoa Trần</Text>
             <Text style={styles.emailText}>khoatldps24667@fpt.edu.vn</Text>
+            <Text style={styles.txtMoney}>Ví: 8888</Text>
         </View>
       </View>
 
@@ -145,6 +146,11 @@ const styles = StyleSheet.create({
     emailText:{
         fontSize: 16,
         fontWeight: "300"
+    },
+    txtMoney:{
+        fontSize: 16,
+        fontWeight: "700",
+        color: "#FF0000"
     },
     boxProfileDetail:{
         flex: 0,

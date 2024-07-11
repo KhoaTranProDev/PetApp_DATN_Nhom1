@@ -121,7 +121,7 @@ export const styles = StyleSheet.create({
     marginLeft: 10,
   },
   btnCheckout: {
-    backgroundColor: "#FF5E00",
+    backgroundColor: "#3CA89F",
     width: 343,
     height: 50,
     borderRadius: 30,
@@ -149,4 +149,6 @@ export const styles = StyleSheet.create({
     fontWeight: "700",
     
   },
+
+  // model
 });
