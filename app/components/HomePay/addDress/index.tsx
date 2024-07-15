@@ -1,6 +1,7 @@
 import {
   FlatList,
   Image,
+  Linking,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -25,7 +26,7 @@ const AddDress: React.FC<{ navigation: any }> = (props) => {
           />
         </TouchableOpacity>
         <Text style={styles.txtThanhToan}>Chọn địa chỉ giao hàng</Text>
-        <TouchableOpacity>
+        <TouchableOpacity onPress={() => Linking.openURL('tel:0900332211')}>
           <Image
             style={styles.imgCall}
             source={require("../../image/call_50px.png")}
@@ -35,7 +36,7 @@ const AddDress: React.FC<{ navigation: any }> = (props) => {
       {/* body */}
       <View style={styles.body}>
         <View style={styles.bg_txtAddDress}>
-          <Text style={styles.txtAddDress}>Danh sách địa chỉ của bạn:</Text>
+          <Text style={styles.txtAddDress}>Danh sách địa chỉ của bạn</Text>
         </View>
         {/* List address */}
         <FlatList

@@ -2,6 +2,7 @@ import {
     Alert,
   FlatList,
   Image,
+  Linking,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -101,7 +102,7 @@ const DetailProduct: React.FC<{ navigation: any }> = (props) => {
           />
         </TouchableOpacity>
         <Text style={styles.txtThanhToan}>Chi tiết đơn hàng</Text>
-        <TouchableOpacity>
+        <TouchableOpacity onPress={() => Linking.openURL('tel:0900332211')}>
           <Image
             style={styles.imgCall}
             source={require("../../image/call_50px.png")}

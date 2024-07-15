@@ -1,24 +1,18 @@
-import {
-  FlatList,
-  Image,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { FlatList, Image, Linking, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import React, { useState } from "react";
 
 // css
 import { styles } from "../../styles/mainPaymentType";
 import { PaymentSalesData } from "../../Data";
 
-const MainPaymentType: React.FC<{ navigation: any }> = (props) => {
-  const { navigation } = props;
-  const [selectedOption, setSelectedOption] = useState(null);
+const MainPaymentType: React.FC<{ route: any, navigation: any }> = ({ route, navigation }) => {
+  const { selectedOption = 'cash' } = route?.params ?? {};
 
-  const handleOptionSelect = (option: any) => {
-    setSelectedOption(option);
+  const handleOptionSelect = (option: string) => {
+    navigation.navigate('PayScreen', { selectedOption: option });
   }
+
+  // console.log("selectedOption", selectedOption);
 
   return (
     <View style={styles.ContainerMain}>
@@ -31,7 +25,7 @@ const MainPaymentType: React.FC<{ navigation: any }> = (props) => {
           />
         </TouchableOpacity>
         <Text style={styles.txtThanhToan}>Hình thức thanh toán</Text>
-        <TouchableOpacity>
+        <TouchableOpacity onPress={() => Linking.openURL('tel:0900332211')}>
           <Image
             style={styles.imgCall}
             source={require("../../image/call_50px.png")}
