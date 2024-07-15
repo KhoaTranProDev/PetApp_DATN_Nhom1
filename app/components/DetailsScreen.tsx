@@ -1,4 +1,5 @@
-import React from 'react';
+import { useNavigation, useRoute } from "@react-navigation/native";
+import React, { useState } from "react";
 import {
   SafeAreaView,
   ScrollView,
@@ -7,20 +8,81 @@ import {
   Text,
   Dimensions,
   View,
-  Image
-} from 'react-native';
+  Image,
+  TouchableOpacity,
+} from "react-native";
 
-function App(): React.JSX.Element {
+  const DetailScreen = () => {
+    const [isExpanded, setIsExpanded] = useState(false);
+
+    const route = useRoute();
+    const navigation = useNavigation();
+    const { pet, imageURL } = route.params;
+
+    const paragraphStyles = {
+      
+    }
+
   return (
     <View style={styles.body}>
       <View style={styles.container}>
-        <ScrollView style={styles.scrollView}>
+        <View style={{flexDirection: 'row', justifyContent:'space-between', marginHorizontal: 25}}>
+          <TouchableOpacity
+            onPress={() => navigation.goBack()}
+            style={{
+              flexDirection: "row",
+              marginBottom: 20,
+            }}
+          >
+            <Image
+              style={{ width: 20, height: 20 }}
+              source={require("./image/back.png")}
+            />
+            <Text
+              style={{
+                marginLeft: 5,
+                fontSize: 14,
+              }}
+            >
+              Back
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={{
+            flexDirection: 'row', 
+            gap: 15,
+            height: 45,
+            width: 170,
+            backgroundColor: "#fff",
+            borderWidth: 1.5,
+            borderRadius: 10,
+            justifyContent: 'center',
+            alignItems: 'center',
+            }}>
+            <Text style={{
+              fontSize: 14,
+              fontWeight: "600",
+              marginLeft: 5,
+            }}>Add to Favorites</Text>
+            <Image 
+            style={{tintColor:"red"}}
+            source={require('./image/add-to-favorites.png')}/>
+          </TouchableOpacity>
+        </View>
+        <ScrollView 
+        horizontal={false}
+        style={styles.scrollView}>
           <View style={styles.sectionItem}>
-            <ScrollView horizontal={true} pagingEnabled={true} style={styles.scrollView3}>
+            <ScrollView
+              horizontal={true}
+              pagingEnabled={true}
+              style={styles.scrollView3}
+            >
               <View style={styles.container3}>
                 <View style={[styles.boxx, styles.boxx1]}>
-                <Image source={require('./image/dog1.jpg')}
-                style={styles.image1}/>
+                  <Image
+                    source={{uri: imageURL}}
+                    style={styles.image1}
+                  />
                 </View>
                 <View style={[styles.boxx, styles.boxx2]}>
                   <Text style={styles.textt3}>Box 2</Text>
@@ -35,20 +97,82 @@ function App(): React.JSX.Element {
             </ScrollView>
           </View>
           <View style={styles.containerTitle}>
-            <Text style={styles.textTitle}>Slim Shady</Text>
-            <Text style={styles.textTitle1}>About this</Text>
-            <Text style={styles.textDetails}>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.</Text>
-            <Text style={styles.textDetailsCountry}> Stadtmitel, Essen (5km)</Text>
-          </View>
-          <View style={styles.containerSellerInfo}>
-          <View style={styles.containerSellerLeft}>
-            <Image source={require('./image/dog1.jpg')} style={styles.containerSellerInfoImg}></Image>
+            <View
+              style={{
+                flexDirection: "row",
+                justifyContent: "space-between",
+              }}
+            >
+              <Text style={styles.textTitle}>{pet.name}</Text>
+              <Text
+                style={{
+                  fontSize: 22,
+                  lineHeight: 42,
+                  fontWeight: "700",
+                  color: "green",
+                }}
+              >
+                {pet.price} VND
+              </Text>
             </View>
-            <View style={styles.containerSellerRight}>
-            <Text style={styles.textTitle2}>PetShop</Text>
-            <Text style={styles.textTitle3}>Nơi mua và bán các thú cưng</Text>
-            </View>
+            <Text
+              style={{
+                fontSize: 22,
+                marginHorizontal: 10,
+                fontWeight: "700",
+                color: "#CC5500",
+              }}
+            >
+              Species:{" "}
+              <Text style={{ fontWeight: "500", color: "#000" }}>
+                {pet.alike}
+              </Text>
+            </Text>
+            <Text
+              style={{
+                fontSize: 22,
+                marginHorizontal: 10,
+                fontWeight: "700",
+                color: "#CC5500",
+              }}
+            >
+              Age:{" "}
+              <Text style={{ fontWeight: "500", color: "#000" }}>
+                {pet.yearold}
+              </Text>
+            </Text>
+            <Text
+              style={{
+                fontSize: 22,
+                marginHorizontal: 10,
+                fontWeight: "700",
+                color: "#CC5500",
+                marginBottom: 20,
+              }}
+            >
+              Weight:{" "}
+              <Text style={{ fontWeight: "500", color: "#000" }}>
+                {pet.weight} kg
+              </Text>
+            </Text>
+            <View style={styles.horizontalLine}></View>
+            <Text style={styles.textTitle1}>About {pet.name}</Text>
+            <Text
+            numberOfLines={isExpanded ? 10 : 3} 
+            style={{
+              fontSize: 16,
+              fontStyle: 'italic',
+              marginHorizontal: 10,
+              }}>{pet.describe}</Text>
+            <TouchableOpacity
+            onPress={()=>setIsExpanded(!isExpanded)}>
+              <Text style={{marginHorizontal: 10,fontSize: 16,color: "#000", fontWeight: "700"}}>{isExpanded ? "Read less" : "Read more"}</Text>
+            </TouchableOpacity>
           </View>
+          <View style={styles.horizontalLine}></View>
+          <TouchableOpacity style={styles.addToCartButton}>
+            <Text style={styles.addTitle}>Add to Cart</Text>
+          </TouchableOpacity>
         </ScrollView>
       </View>
     </View>
@@ -57,19 +181,19 @@ function App(): React.JSX.Element {
 
 const styles = StyleSheet.create({
   body: {
-    backgroundColor: 'black',
-    width: '100%',
-    height: '100%',
+    backgroundColor: "#fff",
+    width: "100%",
+    height: "100%",
   },
   container: {
     flex: 1,
-    margin: 10,
-    backgroundColor: 'black',
+    marginTop: 80,
+    backgroundColor: "#fff",
   },
   sectionItem: {
-    width: '100%',
+    width: "100%",
     height: 200,
-    backgroundColor: 'black',
+    backgroundColor: "#fff",
     marginTop: 10,
   },
   scrollView: {
@@ -79,94 +203,75 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   container3: {
-    flexDirection: 'row',
+    flexDirection: "row",
   },
   boxx: {
-    width: Dimensions.get('window').width, // Chiều rộng bằng chiều rộng màn hình
-    justifyContent: 'center',
-    alignItems: 'center',
+    width: Dimensions.get("window").width, // Chiều rộng bằng chiều rộng màn hình
+    justifyContent: "center",
+    alignItems: "center",
   },
-  image1:{
+  image1: {
     width: 380,
     height: 200,
     borderRadius: 20,
     marginEnd: 15,
+    resizeMode: 'contain'
   },
-  boxx1:{
-
-  },
+  boxx1: {},
   boxx2: {
-    backgroundColor: 'blue',
+    backgroundColor: "blue",
   },
   boxx3: {
-    backgroundColor: 'green',
+    backgroundColor: "green",
   },
   boxx4: {
-    backgroundColor: 'yellow',
+    backgroundColor: "yellow",
   },
   textt3: {
-    color: 'white',
+    color: "white",
     fontSize: 24,
   },
-  containerTitle:{
+  containerTitle: {
+    maxWidth: Dimensions.get("screen").width - 40,
     marginTop: 10,
+    marginHorizontal: 15,
     width: "100%",
-    height: 300,
+    height: 400,
   },
-  textTitle:{
-    padding: 10,
-    color: "white",
-    fontSize: 29,
+  textTitle: {
+    marginHorizontal: 10,
+    color: "black",
+    fontSize: 30,
+    fontWeight: "800",
   },
-  textTitle1:{
-    color: "white",
-    fontSize: 20,
-    padding: 10,
+  textTitle1: {
+    color: "black",
+    fontSize: 22,
+    marginHorizontal: 10,
+    marginTop: 10,
+    fontWeight: "600",
+    marginBottom: 10,
   },
-  textDetails:{
-    color: "white",
-    fontSize: 15,
-    padding: 10,
-  },
-  textDetailsCountry:{
-    color: "white",
-    fontSize: 18,
-    padding: 8,
-  },
-  containerSellerInfo:{
-    width: "100%",
-    height: 100,
-    backgroundColor: "#F1F8E8",
-    borderRadius: 20,
-    display: 'flex',
-    flexDirection: 'row',
-  },
-  
-  containerSellerLeft:{
-    width: '25%'
-  },
-  containerSellerInfoImg:{
-    width: 54,
-    height: 54,
-    borderRadius: 40,
+  addToCartButton:{
+    width: Dimensions.get("screen").width - 40,
+    height: 60,
+    backgroundColor: "#000",
+    justifyContent: 'center',
+    alignItems: 'center',
+    alignSelf: 'center',
+    borderRadius: 15,
     marginTop: 20,
-    marginStart: 20,
-    marginBottom: 20,
   },
-  containerSellerRight:{
-    display: 'flex',
-    flexDirection: 'column',
-    width: '70%'
+  addTitle:{
+    color: "#fff",
+    fontWeight: "600",
+    fontSize: 20,
   },
-  textTitle2:{
-    fontSize: 18,
-    marginTop: 10,
-    fontStyle: 'italic',
-  },
-  textTitle3:{
-    fontSize: 15,
-
+  horizontalLine:{
+    borderBottomWidth: 1,
+    borderBottomColor: "#E5E5E5",
+    marginHorizontal: 15,
   }
 });
 
-export default App;
+export default DetailScreen;

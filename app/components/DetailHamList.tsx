@@ -130,8 +130,8 @@ function DetailCatList(): React.JSX.Element {
     );
   };
 
-  const catData = fullData.filter(
-    (pet) => pet.idspecies === "66706603c593ca6c8b204c35"
+  const hamsterData = fullData.filter(
+    (pet) => pet.idspecies === "667067b5d6f7138e5f01dbb8"
   );
 
   return (
@@ -186,7 +186,7 @@ function DetailCatList(): React.JSX.Element {
               color: "#000",
             }}
           >
-            Current Cat List
+            Current Hamster List
           </Text>
           <TouchableOpacity onPress={() => setmodalVisible(true)}>
             <AntDesign name="filter" size={25} />
@@ -200,14 +200,14 @@ function DetailCatList(): React.JSX.Element {
             fontWeight: "400",
           }}
         >
-          {catData.length} products found
+          {hamsterData.length} products found
         </Text>
 
         <View style={styles.containerBanner}>
           <View style={styles.bannerItem}>
             <View style={styles.petsContainer}>
               <FlatList
-                data={catData}
+                data={hamsterData}
                 renderItem={renderPetItem}
                 keyExtractor={(item) => item._id}
                 contentContainerStyle={styles.scrollViewContent1}

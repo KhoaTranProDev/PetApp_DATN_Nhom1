@@ -13,10 +13,11 @@ import Payment from './components/payment';
 import ForgotPass from './components/forgotpass';
 import VerifyOTP from './components/verifyotpcode';
 import SetPassword from './components/setpassword';
-import App from './components/DetailsScreen';
+import DetailsScreen from './components/DetailsScreen';
 import DetailsItemList from './components/DetailsItemList';
 import Cart from './(tabs)/cart'
 import DetailCatList from './components/DetailCatList';
+import DetailHamList from './components/DetailHamList';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -59,6 +60,8 @@ function HomeFragment (){
       <Stack.Screen name='Home' component={Home}/>
       <Stack.Screen name='DetailsItemList' component={DetailsItemList}/>
       <Stack.Screen name='DetailCatList' component={DetailCatList}/>
+      <Stack.Screen name='DetailHamList' component={DetailHamList}/>
+      <Stack.Screen name='DetailsScreen' component={DetailsScreen}/>
     </Stack.Navigator>
   )
 }

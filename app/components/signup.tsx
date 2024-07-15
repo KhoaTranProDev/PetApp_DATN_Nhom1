@@ -48,7 +48,7 @@ const SignUp = () => {
         style={styles.textInput}
         onChangeText={setUserName}
         value={userName} 
-        placeholder='Enter Usernam'/>
+        placeholder='Enter Username'/>
         <TextInput 
         style={styles.textInput}
         onChangeText={setEmailUser}

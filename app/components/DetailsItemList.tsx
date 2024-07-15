@@ -24,22 +24,17 @@ interface Pet {
   alike: string;
   yearold: number;
   price: number;
-  weight: string;
+  weight: number;
   describe: string;
+  image: string[];
+  status: string;
 }
 
-interface ImageData {
-  _id: string;
-  idpet: string;
-  img: string;
-}
 
 function DetailsItemList(): React.JSX.Element {
   const navigation = useNavigation();
   const [pets, setPets] = useState<Pet[]>([]);
-  const [images, setImages] = useState<ImageData[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
-  const [favButton, setFavButton] = useState("#fff");
   const [searchQuery, setsearchQuery] = useState("");
   const [fullData, setfullData] = useState<Pet[]>([]);
   const [modalVisible, setmodalVisible] = useState(false);
@@ -61,12 +56,7 @@ function DetailsItemList(): React.JSX.Element {
         const petsResponse = await axios.get<Pet[]>(
           "https://apipetapp.onrender.com/pet"
         );
-        const imagesResponse = await axios.get<ImageData[]>(
-          "https://apipetapp.onrender.com/image"
-        );
-
         setPets(petsResponse.data);
-        setImages(imagesResponse.data);
         setLoading(false);
         setfullData(petsResponse.data);
       } catch (error) {
@@ -78,34 +68,20 @@ function DetailsItemList(): React.JSX.Element {
     fetchData();
   }, []);
 
-  const dogImgData = images.filter(
-    (img) => img.idpet === "667062a9c593ca6c8b204c30"
-  );
-  const dogImgURL = dogImgData.map((item) => item.img);
-
-  const renderPetItem = ({ item }: { item: Pet }) => {
+  const renderPetItem = ({ item }: { item: Pet}) => {
     // const petImage = images.find(image => image._id === item.idimage);
 
     return (
-      <View style={styles.item}>
-        {item.idspecies == "667062a9c593ca6c8b204c30" && (
-          <Image source={{ uri: String(dogImgURL) }} style={styles.petImage} />
-        )}
-        <TouchableOpacity
-          style={{
-            position: "absolute",
-          }}
-        >
+      <TouchableOpacity
+      onPress={() => navigation.navigate('DetailsScreen',{pet: item, imageURL: item.image[0]})}
+      style={styles.item}>
+        {item.image.map((imageURL, index) => (
           <Image
-            style={{
-              position: "absolute",
-              left: 125,
-              top: 10,
-              tintColor: favButton,
-            }}
-            source={require("./image/favorite.png")}
+            key={index}
+            source={{ uri: imageURL }}
+            style={styles.petImage}
           />
-        </TouchableOpacity>
+        ))}
         <View style={{ justifyContent: "center" }}>
           <Text style={styles.petText}>
             Pet name:{"\n"}
@@ -150,7 +126,7 @@ function DetailsItemList(): React.JSX.Element {
             {item.price} VND
           </Text>
         </View>
-      </View>
+      </TouchableOpacity>
     );
   };
 
@@ -224,7 +200,7 @@ function DetailsItemList(): React.JSX.Element {
             fontWeight: "400",
           }}
         >
-          10 products found
+          {dogData.length} products found
         </Text>
 
         <View style={styles.containerBanner}>
