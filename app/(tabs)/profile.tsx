@@ -1,11 +1,14 @@
-import { Dimensions, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
-import React from 'react'
+import { Dimensions, Image, Modal, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import React, { useState } from 'react'
 import { Link, Stack, useNavigation } from 'expo-router'
+import SendNewPostModal from './modals/cart.newposts';
 
-const Profile = () => { 
-    const navigation = useNavigation();
+const Profile: React.FC<{ navigation: any }> = (props) => {
+    const { navigation } = props;
+    const [modalVisibleNewPost, setModalVisibleNewPost] = useState(false);
 
   return (
+    <>
     <View style={styles.container}>
         <View style={styles.headerOption}>
             <Text style={styles.title}>Account</Text>
@@ -77,7 +80,7 @@ const Profile = () => {
         }}>Feedback</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity style={styles.boxFeedbackDetail}>
+      <TouchableOpacity style={styles.boxFeedbackDetail} onPress={() => setModalVisibleNewPost(true)}>
         <View style={styles.boxUser}>
             <Image style={{width:30, height: 30}} source={require('./img/selling.png')}/>
         </View>
@@ -103,6 +106,18 @@ const Profile = () => {
         }}>Logout</Text>
       </TouchableOpacity>
     </View>
+      {/* modal */}
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={modalVisibleNewPost}
+        onRequestClose={() => {
+          setModalVisibleNewPost(!modalVisibleNewPost);
+        }}
+      >
+        <SendNewPostModal cloneModal={() => setModalVisibleNewPost(false)} />
+      </Modal>
+      </>
   )
 }
 

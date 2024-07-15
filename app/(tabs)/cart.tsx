@@ -9,8 +9,9 @@ import {
   Modal,
   TextInput,
   Button,
+  ActivityIndicator,
 } from "react-native";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 
 // data
 import { DataCart } from "./Data";
@@ -24,6 +25,7 @@ import { GestureHandlerRootView } from "react-native-gesture-handler";
 import CheckBox from "expo-checkbox";
 import { getCartAll } from "../components/services/cart";
 import SendNewPostModal from "./modals/cart.newposts";
+import { launchImageLibrary } from "react-native-image-picker";
 
 const groupItemsByUser = (data: any) => {
   const grouped = data.reduce((acc: any, item: any) => {
@@ -58,17 +60,20 @@ const CartScreens: React.FC<{ navigation: any }> = (props) => {
   const [totalPriceTxt, setTotalPriceTxt] = useState(0);
   const [cartData, setCartData] = useState([]);
   const [modalVisibleNewPost, setModalVisibleNewPost] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const onGetCartAll = async () => {
     try {
+      setIsLoading(true);
       const res = await getCartAll();
       setCartData(res);
+      setIsLoading(false);
     } catch (error) {
       console.log("Lỗi onGetCartAll ở cart (tabs): ", error);
     }
   };
 
-  console.log("cartData", cartData);
+  // console.log("cartData", cartData[0]?.idPet.image);
 
   const handleDelete = (id: string, name: string) => {
     Alert.alert(
@@ -328,6 +333,10 @@ const CartScreens: React.FC<{ navigation: any }> = (props) => {
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
+      {isLoading ? (
+            <ActivityIndicator size="large" color="#22b6c0" style={{ flex: 1 }} />
+          ) : (
+            <>
       <View style={styles.ContainerMain}>
         {/* header */}
         <View style={styles.header}>
@@ -357,18 +366,18 @@ const CartScreens: React.FC<{ navigation: any }> = (props) => {
 
         {/* body */}
         <View>
-          <FlatList
-            style={{ height: "70%" }}
-            data={groupItemsByUser(data)}
-            renderItem={renderGroup}
-            keyExtractor={(item) => item.idUser.toString()}
-            showsVerticalScrollIndicator={false}
-            initialNumToRender={5}
-            maxToRenderPerBatch={5}
-            updateCellsBatchingPeriod={3000}
-            removeClippedSubviews={true}
-            onEndReachedThreshold={0.5}
-          />
+            <FlatList
+              style={{ height: "70%" }}
+              data={groupItemsByUser(data)}
+              renderItem={renderGroup}
+              keyExtractor={(item) => item.idUser.toString()}
+              showsVerticalScrollIndicator={false}
+              initialNumToRender={5}
+              maxToRenderPerBatch={5}
+              updateCellsBatchingPeriod={3000}
+              removeClippedSubviews={true}
+              onEndReachedThreshold={0.5}
+            />
         </View>
 
         {/* footer */}
@@ -410,6 +419,8 @@ const CartScreens: React.FC<{ navigation: any }> = (props) => {
       >
         <SendNewPostModal cloneModal={() => setModalVisibleNewPost(false)} />
       </Modal>
+      </>
+      )}
     </GestureHandlerRootView>
   );
 };

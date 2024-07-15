@@ -1,4 +1,7 @@
 import {
+  ActivityIndicator,
+  Image,
+  ScrollView,
   StyleSheet,
   Text,
   TextInput,
@@ -6,8 +9,11 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import React, { useState } from "react";
-import { sendNewPost } from "@/app/components/services/pet";
+import React, { useCallback, useEffect, useState } from "react";
+import { sendNewPost, uploadImageStatus } from "@/app/components/services/pet";
+import { launchImageLibrary } from "react-native-image-picker";
+import axios from "axios";
+import * as ImagePicker from "expo-image-picker";
 
 interface SendNewPostModalProps {
   cloneModal: any;
@@ -20,6 +26,9 @@ const SendNewPostModal: React.FC<SendNewPostModalProps> = (props) => {
   const [inputValuePrice, setInputValuePrice] = useState("");
   const [inputValueWeight, setInputValueWeight] = useState("");
   const [inputValueDescribe, setInputValueDescribe] = useState("");
+  const [imagePath, setImagePath] = useState<string[]>([]);
+  const [uploadedImages, setUploadedImages] = useState<string[]>([]);
+  const [loading, setLoading] = useState(false);
 
   const handleSubmit = async () => {
     const postData = {
@@ -29,6 +38,7 @@ const SendNewPostModal: React.FC<SendNewPostModalProps> = (props) => {
       price: inputValuePrice,
       weight: inputValueWeight,
       describe: inputValueDescribe,
+      image: uploadedImages,
     };
 
     const response = await sendNewPost(postData);
@@ -40,6 +50,62 @@ const SendNewPostModal: React.FC<SendNewPostModalProps> = (props) => {
       console.log("Lỗi khi gửi bài viết");
     }
   };
+
+  useEffect(() => {
+    if (imagePath.length > 0) {
+      uploadImages();
+    }
+  }, [imagePath]);
+
+  const openLibrary = async () => {
+    const permissionResult =
+      await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (permissionResult.granted === false) {
+      alert("Permission to access media library is required!");
+      return;
+    }
+
+    const pickerResult = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.All,
+      allowsMultipleSelection: true,
+      quality: 1,
+    });
+
+    const picker = pickerResult as any;
+    if (!picker.cancelled) {
+      const selectedImages = picker.assets.map((asset: any) => asset.uri);
+      setImagePath(selectedImages);
+    }
+  };
+
+  const uploadImages = async () => {
+    try {
+      const uploadPromises = imagePath.map(async (uri, index) => {
+        const parts = uri.split(".");
+        const fileType = parts[parts.length - 1];
+  
+        const formData = new FormData();
+        const form = formData as any;
+        form.append("image", {
+          uri,
+          name: `photo_${index}.${fileType}`,
+          type: `image/${fileType}`,
+        });
+  
+        const response = await uploadImageStatus(formData);
+        return response.data.urls[0];
+      });
+  
+      setLoading(true);
+      const uploadedUrls = await Promise.all(uploadPromises);
+      setUploadedImages(uploadedUrls);
+      setLoading(false);
+    } catch (error) {
+      console.error("Error uploading images:", error);
+      setLoading(false);
+    }
+  };
+  
 
   return (
     <View style={styles.modalViewNewPost}>
@@ -80,18 +146,33 @@ const SendNewPostModal: React.FC<SendNewPostModalProps> = (props) => {
         placeholder="Nhập cân nặng của thú cưng"
         value={inputValueWeight}
         onChangeText={setInputValueWeight}
+        keyboardType="numeric"
       />
-      {/* describe */}
+      {/* Nhập mô tả */}
       <TextInput
-        style={styles.input}
-        placeholder="Nhập mô tả thú cưng của bạn"
+        style={styles.inputDescription}
+        placeholder="Nhập mô tả"
         value={inputValueDescribe}
         onChangeText={setInputValueDescribe}
+        multiline={true}
       />
       {/* up image */}
-      <TouchableOpacity style={styles.btnUpImage}>
+      <TouchableOpacity style={styles.btnUpImage} onPress={openLibrary}>
         <Text>Thêm ảnh thú cưng</Text>
       </TouchableOpacity>
+      {loading ? (
+        <ActivityIndicator size="large" color="#22b6c0" />
+      ) : (
+        <>
+          {uploadedImages?.length > 0 && (
+            <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+              {uploadedImages?.map((uri, index) => (
+                <Image key={index} source={{ uri }} style={styles.selectedImage} />
+              ))}
+            </ScrollView>
+          )}
+        </>
+      )}
       <View style={styles.freamUpCan}>
         {/* button cancel */}
         <TouchableOpacity onPress={props.cloneModal} style={styles.btnCancel}>
@@ -111,7 +192,6 @@ export default SendNewPostModal;
 const styles = StyleSheet.create({
   modalViewNewPost: {
     margin: 20,
-    marginTop: 100,
     backgroundColor: "white",
     borderRadius: 20,
     padding: 20,
@@ -141,6 +221,16 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     backgroundColor: "#F7F7F7",
   },
+  inputDescription: {
+    width: "100%",
+    borderColor: "#DFDFDF",
+    borderWidth: 1,
+    borderRadius: 10,
+    paddingLeft: 10,
+    paddingBottom: 100,
+    marginBottom: 10,
+    backgroundColor: "#F7F7F7",
+  },
   subtitleText: {
     marginBottom: 10,
     color: "#555",
@@ -153,6 +243,14 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     borderRadius: 10,
+  },
+  selectedImage: {
+    width: 100,
+    height: 100,
+    marginTop: 10,
+    padding: 10,
+    borderRadius: 10,
+    marginRight: 10,
   },
   freamUpCan: {
     flexDirection: "row",
