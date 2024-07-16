@@ -14,6 +14,7 @@ import { sendNewPost, uploadImageStatus } from "@/app/components/services/pet";
 import { launchImageLibrary } from "react-native-image-picker";
 import axios from "axios";
 import * as ImagePicker from "expo-image-picker";
+import { validatePostData } from "../validation/cart.validation";
 
 interface SendNewPostModalProps {
   cloneModal: any;
@@ -40,6 +41,10 @@ const SendNewPostModal: React.FC<SendNewPostModalProps> = (props) => {
       describe: inputValueDescribe,
       image: uploadedImages,
     };
+
+    if (!validatePostData(postData)) {
+      return;
+    }
 
     const response = await sendNewPost(postData);
 
