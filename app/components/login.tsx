@@ -18,17 +18,13 @@ const Login = () => {
 
     const handleLogin = async() => {
         try {
-            const response = await AxiosHelper.post("/users/login",{
+            const response = await AxiosHelper.post("/users/login", {
                 username: userName,
                 password: passwordUser
             });
+            
             if(response.data.status == 1){
                 await AsyncStorage.setItem('userId', response.data.user._id);
-                await AsyncStorage.setItem('email', response.data.user.email);
-                await AsyncStorage.setItem('username', response.data.user.username);
-                await AsyncStorage.setItem('avatar', response.data.user.avatar);
-                await AsyncStorage.setItem('dob', response.data.user.birthDayOf);
-                await AsyncStorage.setItem('sdt', response.data.user.sdt);
                 ToastAndroid.show("Đăng nhập thành công!", ToastAndroid.SHORT);
                 navigation.navigate("HomeScreen");
             } else {

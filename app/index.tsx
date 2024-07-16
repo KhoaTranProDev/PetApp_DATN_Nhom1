@@ -47,7 +47,7 @@ function HomeScreen (){
         tabBarIcon: ({color}) => (
           <Feather name='shopping-cart' size={28} color={color}/>
         ),
-        tabBarStyle: { display: GetRouteCat(route) },
+        tabBarStyle: { display: 'none' },
         headerShown: false,
       })}/>
       <Tab.Screen name='ProfileScreen' component={ProfileScreen}

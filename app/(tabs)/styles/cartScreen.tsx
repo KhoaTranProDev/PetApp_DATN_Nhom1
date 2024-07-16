@@ -85,6 +85,11 @@ export const styles = StyleSheet.create({
     fontSize: 14,
     paddingLeft: 20,
   },
+  txtAlike: {
+    color: "#6D3805",
+    fontSize: 14,
+    paddingLeft: 20,
+  },
   txtPrice: {
     color: "#6D3805",
     fontSize: 16,
@@ -141,6 +146,14 @@ export const styles = StyleSheet.create({
     color: "#6D3805",
     fontSize: 18,
     fontWeight: "700",
+    textAlign: "right",
+  },
+  txtPriceTT: {
+    color: "#6D3805",
+    fontSize: 16,
+    fontWeight: "400",
+    paddingLeft: 15,
+    paddingTop: 5,
     textAlign: "right",
   },
   txtPriceTotal: {

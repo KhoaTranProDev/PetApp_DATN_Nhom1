@@ -23,17 +23,19 @@ import { styles } from "./styles/cartScreen";
 import Swipeable from "react-native-gesture-handler/Swipeable";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import CheckBox from "expo-checkbox";
-import { getCartAll } from "../components/services/cart";
+import { getCartAll, getCartIdUser } from "../components/services/cart";
 import SendNewPostModal from "./modals/cart.newposts";
 import { launchImageLibrary } from "react-native-image-picker";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { getDetailUser } from "./services/cart";
 
 const groupItemsByUser = (data: any) => {
   const grouped = data.reduce((acc: any, item: any) => {
-    const { idUser } = item;
-    if (!acc[idUser]) {
-      acc[idUser] = [];
+    const userId = item?.idPet?.idUser?._id;
+    if (!acc[userId]) {
+      acc[userId] = [];
     }
-    acc[idUser].push(item);
+    acc[userId].push(item);
     return acc;
   }, {});
   return Object.entries(grouped).map(([idUser, items]) => ({
@@ -42,38 +44,25 @@ const groupItemsByUser = (data: any) => {
   }));
 };
 
-const calculateTotalPrice = (cartData: any[]) => {
+const calculateTotalPrice = (cartData: any) => {
   let total = 0;
-  cartData.forEach((item) => {
-    total += Number(item.price.replace("$", ""));
+  cartData.forEach((item: any) => {
+    total += item.idPet.price;
   });
   return total;
 };
 
 const CartScreens: React.FC<{ navigation: any }> = (props) => {
   const { navigation } = props;
-  const [data, setData] = useState(DataCart);
   const [checkedItems, setCheckedItems] = useState<{ [key: string]: boolean }>(
     {}
   );
-  const [totalPrice, setTotalPrice] = useState(calculateTotalPrice(DataCart));
   const [totalPriceTxt, setTotalPriceTxt] = useState(0);
-  const [cartData, setCartData] = useState([]);
+  const [cartData, setCartData] = useState<any>([]);
+  const [totalPrice, setTotalPrice] = useState(calculateTotalPrice(cartData));
   const [modalVisibleNewPost, setModalVisibleNewPost] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-
-  const onGetCartAll = async () => {
-    try {
-      setIsLoading(true);
-      const res = await getCartAll();
-      setCartData(res);
-      setIsLoading(false);
-    } catch (error) {
-      console.log("Lỗi onGetCartAll ở cart (tabs): ", error);
-    }
-  };
-
-  // console.log("cartData", cartData[0]?.idPet.image);
+  const [user, setUser] = useState<any>({});
 
   const handleDelete = (id: string, name: string) => {
     Alert.alert(
@@ -87,7 +76,9 @@ const CartScreens: React.FC<{ navigation: any }> = (props) => {
         {
           text: "OK",
           onPress: () => {
-            setData((prev) => prev.filter((item) => item.id !== id));
+            setCartData((prev: any) =>
+              prev.filter((item: any) => item.id !== id)
+            );
           },
         },
       ]
@@ -100,20 +91,20 @@ const CartScreens: React.FC<{ navigation: any }> = (props) => {
       updatedItems[id] = !prev[id];
 
       if (id === "all") {
-        data.forEach((item) => {
-          updatedItems[item.id] = updatedItems["all"];
+        Object.keys(updatedItems).forEach((itemId) => {
+          updatedItems[itemId] = updatedItems[id];
         });
       } else {
-        updatedItems["all"] = data.every((item) => updatedItems[item.id]);
+        updatedItems["all"] = Object.keys(updatedItems).every(
+          (itemId) => updatedItems[itemId]
+        );
       }
 
       let totalPrice = 0;
       Object.keys(updatedItems).forEach((itemId) => {
         if (updatedItems[itemId]) {
-          const selectedItem = data.find((item) => item.id === itemId);
-          totalPrice += selectedItem
-            ? Number(selectedItem.price.replace("$", ""))
-            : 0; // Lấy giá từ danh sách sản phẩm
+          const selectedItem = cartData.find((item: any) => item._id === itemId);
+          totalPrice += selectedItem ? Number(selectedItem.idPet.price) : 0;
         }
       });
 
@@ -124,83 +115,45 @@ const CartScreens: React.FC<{ navigation: any }> = (props) => {
     });
   };
 
-  const formatNumber = (num: number): string => {
-    if (num.toString().length > 5) {
-      return num.toString().slice(0, 5) + "...";
+  const formatNumber = (num: number) => {
+    let formattedNum = num.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1.");
+    if (formattedNum.length > 6) {
+        formattedNum = formattedNum.slice(0, formattedNum.length - 3) + ".";
     }
-    return num.toString();
-  };
+    return formattedNum;
+};
 
-  const increaseQuantity = (id: string) => {
-    setCheckedItems((prev) => {
-      const updatedItems = { ...prev };
-      updatedItems[id] = true;
-
-      let totalPrice2 = totalPrice;
-      const selectedItem = data.find((item) => item.id === id);
-      if (selectedItem) {
-        const itemPrice = Number(selectedItem.price.replace("$", ""));
-        totalPrice2 += itemPrice;
-      }
-
-      setData((prevData) =>
-        prevData.map((item) =>
-          item.id === id ? { ...item, quantity: item.quantity + 1 } : item
-        )
-      );
-
-      setTotalPrice(totalPrice2);
-      setTotalPriceTxt(totalPrice2);
-
-      return updatedItems;
-    });
-  };
-
-  const decreaseQuantity = (id: string) => {
-    setCheckedItems((prev) => {
-      const updatedItems = { ...prev };
-      updatedItems[id] = false;
-
-      let totalPrice2 = totalPrice;
-      const selectedItem = data.find((item) => item.id === id);
-      if (selectedItem) {
-        const itemPrice = Number(selectedItem.price.replace("$", ""));
-        totalPrice2 = Math.max(totalPrice2 - itemPrice, 0);
-      }
-
-      setData((prevData) =>
-        prevData.map((item) =>
-          item.id === id
-            ? { ...item, quantity: Math.max(item.quantity - 1, 1) }
-            : item
-        )
-      );
-
-      setTotalPrice(totalPrice2);
-      setTotalPriceTxt(totalPrice2);
-
-      return updatedItems;
-    });
-  };
+const formatNumberTT = (num: number) => {
+  return num.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1.");
+}
 
   const toggleGroupCheckbox = (idUser: string) => {
     setCheckedItems((prev) => {
       const updatedItems = { ...prev };
       const allChecked = !prev[idUser];
 
-      data.forEach((item) => {
-        if (item.idUser === idUser) {
-          updatedItems[item.id] = allChecked;
+      updatedItems[idUser] = allChecked;
+
+      cartData.forEach((item: any) => {
+        if (item.idPet.idUser._id === idUser) {
+          updatedItems[item._id] = allChecked;
         }
       });
+
+      updatedItems["all"] = Object.keys(updatedItems).every(
+        (itemId) => updatedItems[itemId]
+      );
 
       let totalPrice = 0;
       Object.keys(updatedItems).forEach((itemId) => {
         if (updatedItems[itemId]) {
-          const selectedItem = data.find((item) => item.id === itemId);
-          totalPrice += selectedItem ? Number(selectedItem.price) : 0;
+          const selectedItem = cartData.find((item: any) => item._id === itemId);
+          totalPrice += selectedItem ? Number(selectedItem.idPet.price) : 0;
         }
       });
+
+      setTotalPrice(totalPrice);
+      setTotalPriceTxt(totalPrice);
 
       return updatedItems;
     });
@@ -208,10 +161,10 @@ const CartScreens: React.FC<{ navigation: any }> = (props) => {
 
   const renderProduct = (product: any) => (
     <Swipeable
-      key={product.id}
+      key={product._id}
       renderRightActions={() => (
         <TouchableOpacity
-          onPress={() => handleDelete(product.id, product.name)}
+          onPress={() => handleDelete(product._id, product?.idPet?.name)}
           style={styles.btnDelete}
         >
           <Image
@@ -221,156 +174,132 @@ const CartScreens: React.FC<{ navigation: any }> = (props) => {
         </TouchableOpacity>
       )}
     >
-      <View style={styles.frameProduct}>
-        <Image style={styles.imgProduct} source={product.image} />
-        <View>
-          <View
-            style={{
-              width: "88%",
-              flexDirection: "row",
-              justifyContent: "space-between",
-            }}
-          >
-            <Text style={styles.nameProduct}>{product.name}</Text>
-            <CheckBox
-              value={checkedItems[product.id] || false}
-              onValueChange={() => toggleCheckbox(product.id)}
-              style={{ width: 20, height: 20, marginTop: 10 }}
-            />
-          </View>
-          <Text style={styles.nameGram}>{product.gram}</Text>
-          <View
-            style={{
-              flexDirection: "row",
-              alignItems: "center",
-              justifyContent: "space-between",
-            }}
-          >
-            <View style={styles.frameAllTotal}>
-              <TouchableOpacity
-                style={styles.btnTru}
-                // onPress={() => decreaseQuantity(product.id)}
-              >
-                <Text
-                  style={{
-                    color: "#6D3805",
-                    fontSize: 18,
-                    fontWeight: "400",
-                  }}
-                >
-                  -
-                </Text>
-              </TouchableOpacity>
-
-              <Text
-                style={{
-                  color: "#6D3805",
-                  fontSize: 18,
-                  fontWeight: "400",
-                  paddingLeft: 20,
-                }}
-              >
-                {product.quantity}
-              </Text>
-              <TouchableOpacity
-                style={[styles.btnTru, { marginLeft: 20 }]}
-                // onPress={() => increaseQuantity(product.id)}
-              >
-                <Text
-                  style={{
-                    color: "#6D3805",
-                    fontSize: 18,
-                    fontWeight: "400",
-                  }}
-                >
-                  +
-                </Text>
-              </TouchableOpacity>
+      {product?.idPet?.idUser._id !== user?._id && (
+        <View style={styles.frameProduct}>
+          <Image
+            style={styles.imgProduct}
+            source={{ uri: product?.idPet?.image[0] }}
+          />
+          <View>
+            <View
+              style={{
+                width: "88%",
+                flexDirection: "row",
+                justifyContent: "space-between",
+              }}
+            >
+              <Text style={styles.nameProduct}>{product?.idPet?.name}</Text>
+              <CheckBox
+                value={checkedItems[product._id] || false}
+                onValueChange={() => toggleCheckbox(product._id)}
+                style={{ width: 20, height: 20, marginTop: 10 }}
+              />
             </View>
-            <Text style={styles.txtPrice}>
-              ${" "}
-              {formatNumber(
-                Number(product.price.replace("$", "")) * product.quantity
-              )}
+            <Text style={styles.nameGram}>
+              Tuổi: {product?.idPet?.yearold} | Nặng: {product?.idPet?.weight}
             </Text>
+            <View
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                justifyContent: "space-between",
+              }}
+            >
+              <Text style={styles.txtAlike}>Loài: {product?.idPet?.alike}</Text>
+              <Text style={styles.txtPrice}>
+                {formatNumber(product?.idPet?.price)} VNĐ
+              </Text>
+            </View>
           </View>
         </View>
-      </View>
+      )}
     </Swipeable>
   );
 
-  const renderGroup = ({ item }: { item: any }) => (
-    <View key={item.idUser}>
-      <View
-        style={{
-          flexDirection: "row",
-          alignItems: "center",
-          justifyContent: "space-between",
-        }}
-      >
-        <View style={styles.frameCheckBoxAll}>
-          <Text style={styles.userHeader}>{item.idUser}</Text>
-          <CheckBox
-            value={checkedItems[item.idUser] || false}
-            onValueChange={() => {
-              toggleGroupCheckbox(item.idUser);
-              toggleCheckbox(item.idUser);
-            }}
-            style={styles.checkBoxAll}
-          />
+  const renderGroup = ({ item }: { item: any }) => {
+    return (
+      <View key={item.items[0].idPet.idUser._id}>
+        <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
+          <View style={styles.frameCheckBoxAll}>
+            <Text style={styles.userHeader}>{item?.items[0].idPet?.idUser?.name}</Text>
+            <CheckBox
+              value={checkedItems[item.items[0].idPet.idUser._id] || false}
+              onValueChange={() => toggleGroupCheckbox(item.items[0].idPet.idUser._id)}
+              style={styles.checkBoxAll}
+            />
+          </View>
+          <TouchableOpacity>
+            <Text style={styles.txtUpdatePdAll}>Sửa</Text>
+          </TouchableOpacity>
         </View>
-        <TouchableOpacity>
-          <Text style={styles.txtUpdatePdAll}>Sửa</Text>
-        </TouchableOpacity>
+        {item.items.map((product: any) => renderProduct(product))}
       </View>
-      {item.items.map(renderProduct)}
-    </View>
-  );
+    );
+  };
+
+  const onGetUserId = async () => {
+    try {
+      const userId = await AsyncStorage.getItem("userId");
+      const resIdUser = await getDetailUser(userId);
+      setUser(resIdUser.user);
+      setIsLoading(true);
+      const resCart = await getCartIdUser(resIdUser.user._id);
+      setCartData(resCart);
+      setIsLoading(false);
+    } catch (error) {
+      console.log("Lỗi onGetUserId ở cart (tabs): ", error);
+    }
+  };
+
+  // console.log("cartData: ", cartData.map((item: any) => item?.idPet.idUser));
 
   useEffect(() => {
-    onGetCartAll();
+    onGetUserId();
   }, []);
+
+  useEffect(() => {
+    setTotalPrice(calculateTotalPrice(cartData));
+  }, [cartData]);
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       {isLoading ? (
-            <ActivityIndicator size="large" color="#22b6c0" style={{ flex: 1 }} />
-          ) : (
-            <>
-      <View style={styles.ContainerMain}>
-        {/* header */}
-        <View style={styles.header}>
-          <TouchableOpacity onPress={() => navigation.goBack()}>
-            <Image
-              style={{ marginTop: 15, width: 28, height: 28 }}
-              source={require("./img/back_to_50px.png")}
-            />
-          </TouchableOpacity>
-          <Text
-            style={{
-              fontSize: 18,
-              fontWeight: "700",
-              color: "#6D3805",
-              marginTop: 15,
-            }}
-          >
-            Giỏ hàng
-          </Text>
-          <TouchableOpacity onPress={() => setModalVisibleNewPost(true)}>
-            <Image
-              style={{ marginTop: 15, width: 35, height: 35 }}
-              source={require("./img/goodnotes_50px.png")}
-            />
-          </TouchableOpacity>
-        </View>
+        <ActivityIndicator size="large" color="#22b6c0" style={{ flex: 1 }} />
+      ) : (
+        <>
+          <View style={styles.ContainerMain}>
+            {/* header */}
+            <View style={styles.header}>
+              <TouchableOpacity onPress={() => navigation.goBack()}>
+                <Image
+                  style={{ marginTop: 15, width: 28, height: 28 }}
+                  source={require("./img/back_to_50px.png")}
+                />
+              </TouchableOpacity>
+              <Text
+                style={{
+                  fontSize: 18,
+                  fontWeight: "700",
+                  color: "#6D3805",
+                  marginTop: 15,
+                }}
+              >
+                Giỏ hàng
+              </Text>
+              <TouchableOpacity onPress={() => setModalVisibleNewPost(true)}>
+                <Image
+                  style={{ marginTop: 15, width: 35, height: 35 }}
+                  source={require("./img/goodnotes_50px.png")}
+                />
+              </TouchableOpacity>
+            </View>
 
-        {/* body */}
-        <View>
+            {/* body */}
             <FlatList
               style={{ height: "70%" }}
-              data={groupItemsByUser(data)}
+              data={groupItemsByUser(cartData)}
               renderItem={renderGroup}
-              keyExtractor={(item) => item.idUser.toString()}
+              keyExtractor={(item) => item.idUser}
               showsVerticalScrollIndicator={false}
               initialNumToRender={5}
               maxToRenderPerBatch={5}
@@ -378,48 +307,53 @@ const CartScreens: React.FC<{ navigation: any }> = (props) => {
               removeClippedSubviews={true}
               onEndReachedThreshold={0.5}
             />
-        </View>
 
-        {/* footer */}
-        <View>
-          <View style={styles.frameTotal}>
-            <View style={styles.frameCheckBoxAll}>
-              <Text style={styles.userHeader}>Tất cả</Text>
-              <CheckBox
-                value={checkedItems["all"] || false}
-                onValueChange={() => toggleCheckbox("all")}
-                style={styles.checkBoxAll}
-              />
-            </View>
-            <View style={{ flexDirection: "row", alignItems: "center" }}>
-              <Text style={styles.txtTotal}>Tạm tính:</Text>
-              <Text style={styles.txtPrice}>$ {formatNumber(totalPrice)}</Text>
+            {/* footer */}
+            <View>
+              <View style={styles.frameTotal}>
+                <View style={styles.frameCheckBoxAll}>
+                  <Text style={styles.userHeader}>Tất cả</Text>
+                  <CheckBox
+                    value={checkedItems["all"] || false}
+                    onValueChange={() => toggleCheckbox("all")}
+                    style={styles.checkBoxAll}
+                  />
+                </View>
+                <View style={{ flexDirection: "row", alignItems: "center" }}>
+                  <Text style={styles.txtTotal}>Tạm tính:</Text>
+                  <Text style={styles.txtPriceTT}>
+                    {formatNumberTT(totalPrice)} VNĐ
+                  </Text>
+                </View>
+              </View>
+              <View style={{ flexDirection: "row", justifyContent: "center" }}>
+                <TouchableOpacity
+                  style={styles.btnCheckout}
+                  onPress={() => navigation.navigate("PayScreen")}
+                >
+                  <Text
+                    style={{ fontSize: 18, fontWeight: "700", color: "#fff" }}
+                  >
+                    Thanh toán: {formatNumberTT(totalPriceTxt)}
+                  </Text>
+                </TouchableOpacity>
+              </View>
             </View>
           </View>
-          <View style={{ flexDirection: "row", justifyContent: "center" }}>
-            <TouchableOpacity
-              style={styles.btnCheckout}
-              onPress={() => navigation.navigate("PayScreen")}
-            >
-              <Text style={{ fontSize: 18, fontWeight: "700", color: "#fff" }}>
-                Thanh toán: {formatNumber(totalPriceTxt)}
-              </Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      </View>
-      {/* modal */}
-      <Modal
-        animationType="slide"
-        transparent={true}
-        visible={modalVisibleNewPost}
-        onRequestClose={() => {
-          setModalVisibleNewPost(!modalVisibleNewPost);
-        }}
-      >
-        <SendNewPostModal cloneModal={() => setModalVisibleNewPost(false)} />
-      </Modal>
-      </>
+          {/* modal */}
+          <Modal
+            animationType="slide"
+            transparent={true}
+            visible={modalVisibleNewPost}
+            onRequestClose={() => {
+              setModalVisibleNewPost(!modalVisibleNewPost);
+            }}
+          >
+            <SendNewPostModal
+              cloneModal={() => setModalVisibleNewPost(false)}
+            />
+          </Modal>
+        </>
       )}
     </GestureHandlerRootView>
   );
