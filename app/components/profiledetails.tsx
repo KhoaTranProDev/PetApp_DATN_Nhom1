@@ -1,11 +1,35 @@
 import { Dimensions, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { Stack, useNavigation } from 'expo-router'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { Ionicons } from '@expo/vector-icons'
+import AsyncStorage from '@react-native-async-storage/async-storage'
 
 const ProfileDetails = () => {
   const navigation = useNavigation();
+
+  const [username, setUsername] = useState('');
+  const [emailUser, setEmailUser] = useState('');
+  const [avatarUser, setAvatarUser] = useState('');
+  const [dateOfBirth, setDateOfBirth] = useState('');
+  const [phone, setPhone] = useState('');
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      const storedUsername = await AsyncStorage.getItem('username');
+      const storedEmailUser = await AsyncStorage.getItem('email');
+      const storedAvatarUser = await AsyncStorage.getItem('avatar');
+      const storedDOB = await AsyncStorage.getItem('dob');
+      const storedPhone = await AsyncStorage.getItem('sdt');
+      setPhone(String(storedPhone));
+      setDateOfBirth(String(storedDOB));
+      setAvatarUser(String(storedAvatarUser));
+      setUsername(String(storedUsername));
+      setEmailUser(String(storedEmailUser));
+    };
+    fetchUser();
+  }, []);
+
   return (
     <View style={styles.container}>
       <TouchableOpacity 
@@ -25,7 +49,7 @@ const ProfileDetails = () => {
       }}>
         <Image 
         style={{width: 120, height: 120, borderRadius: 60}}
-        source={{uri: "https://i.pinimg.com/736x/56/3f/0b/563f0b714e90f9195c1d63b09f5fb8e1.jpg"}}/>
+        source={{uri: avatarUser}}/>
         <Text style={{
           marginTop: 10,
           fontSize: 14,
@@ -44,7 +68,7 @@ const ProfileDetails = () => {
           <Text style={{
             fontSize: 16,
             fontWeight: '400',
-          }}>Khoa Tran</Text>
+          }}>{username}</Text>
           <Image 
           style={{width: 25, height: 25}}
           source={require('../(tabs)/img/forward.png')}/>
@@ -60,7 +84,7 @@ const ProfileDetails = () => {
           <Text style={{
             fontSize: 16,
             fontWeight: '400',
-          }}>khoatldps24667@fpt.edu.vn</Text>
+          }}>{emailUser}</Text>
           <Image 
           style={{width: 25, height: 25}}
           source={require('../(tabs)/img/forward.png')}/>
@@ -76,7 +100,23 @@ const ProfileDetails = () => {
           <Text style={{
             fontSize: 16,
             fontWeight: '400',
-          }}>10 February, 2003</Text>
+          }}>{dateOfBirth}</Text>
+          <Image 
+          style={{width: 25, height: 25}}
+          source={require('../(tabs)/img/forward.png')}/>
+        </TouchableOpacity>
+      </View>
+
+      <View style={styles.box}>
+        <Text style={{
+          fontSize: 16,
+          fontWeight: "400",
+        }}>Contact:</Text>
+        <TouchableOpacity style={styles.infobox}>
+          <Text style={{
+            fontSize: 16,
+            fontWeight: '400',
+          }}>{phone}</Text>
           <Image 
           style={{width: 25, height: 25}}
           source={require('../(tabs)/img/forward.png')}/>

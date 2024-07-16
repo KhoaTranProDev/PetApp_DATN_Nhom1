@@ -1,9 +1,42 @@
 import { Dimensions, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { Link, Stack, useNavigation } from 'expo-router'
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import AxiosHelper from '../util/AxiosHelper';
+import axios from 'axios';
+
+interface User {
+    _id: string;
+    name: string;
+    email: string;
+    sdt: string;
+    username: string;
+    password: string;
+    avatar: string;
+    birthDayOf: string;
+}
 
 const Profile = () => { 
     const navigation = useNavigation();
+
+    const [username, setUsername] = useState('');
+    const [emailUser, setEmailUser] = useState('');
+    const [avatarUser, setAvatarUser] = useState('');
+    const [user, setUser] = useState<User[]>([]);
+
+
+    useEffect(() => {
+        const fetchUser = async () => {
+          const storedUsername = await AsyncStorage.getItem('username');
+          const storedEmailUser = await AsyncStorage.getItem('email');
+          const storedAvatarUser = await AsyncStorage.getItem('avatar');
+          setAvatarUser(String(storedAvatarUser));
+          setUsername(String(storedUsername));
+          setEmailUser(String(storedEmailUser));
+        };
+        fetchUser();
+      }, []);
+
 
   return (
     <View style={styles.container}>
@@ -13,10 +46,10 @@ const Profile = () => {
       <View style={styles.boxAccount}>
         <Image
         style={{width: 80, height: 80, borderRadius: 50}}
-        source={{uri:"https://i.pinimg.com/736x/56/3f/0b/563f0b714e90f9195c1d63b09f5fb8e1.jpg"}}/>
+        source={{uri: avatarUser}}/>
         <View style={styles.middleBoxAccount}>
-            <Text style={styles.nameText}>Khoa Trần</Text>
-            <Text style={styles.emailText}>khoatldps24667@fpt.edu.vn</Text>
+            <Text style={styles.nameText}>{username}</Text>
+            <Text style={styles.emailText}>{emailUser}</Text>
         </View>
       </View>
 
@@ -50,7 +83,8 @@ const Profile = () => {
 
       
 
-      <TouchableOpacity style={styles.boxOrderDetail}>
+      <TouchableOpacity 
+      style={styles.boxOrderDetail}>
         <View style={styles.boxUser}>
             <Image style={{width:30, height: 30}} source={require('./img/oderIcon.png')}/>
         </View>
@@ -64,19 +98,7 @@ const Profile = () => {
 
       <View style={styles.horizontalLine}></View>
 
-      <TouchableOpacity style={styles.boxFeedbackDetail}>
-        <View style={styles.boxUser}>
-            <Image style={{width:30, height: 30}} source={require('./img/feedback.png')}/>
-        </View>
-        <Text style={{
-            fontSize: 18,
-            fontWeight: "600",
-            marginTop: 10,
-            marginLeft: 20
-        }}>Feedback</Text>
-      </TouchableOpacity>
-
-      <TouchableOpacity style={styles.boxFeedbackDetail}>
+      {/* <TouchableOpacity style={styles.boxFeedbackDetail}>
         <View style={styles.boxUser}>
             <Image style={{width:30, height: 30}} source={require('./img/selling.png')}/>
         </View>
@@ -86,7 +108,7 @@ const Profile = () => {
             marginTop: 10,
             marginLeft: 20
         }}>My Selling Request Order</Text>
-      </TouchableOpacity>
+      </TouchableOpacity> */}
 
       <TouchableOpacity 
       onPress={() => navigation.navigate("Login")}

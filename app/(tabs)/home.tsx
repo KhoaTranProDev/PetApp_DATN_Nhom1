@@ -19,6 +19,7 @@ import { createStackNavigator } from "@react-navigation/stack";
 import ChangeImage from "../components/ChangeScreen";
 import DetailsItemList from "../components/DetailsItemList";
 import AxiosHelper from "../util/AxiosHelper";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 // Định nghĩa kiểu cho dữ liệu
 interface Pet {
@@ -39,6 +40,8 @@ const Stack = createStackNavigator();
 const Home = () => {
   const [pets, setPets] = useState<Pet[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
+  const [usernameUsers, setUsernameUsers] = useState('');
+  const [avatarUser, setAvatarUser] = useState('');
 
   const navigation = useNavigation();
   const route = useRoute();
@@ -46,6 +49,16 @@ const Home = () => {
   const handleTrendingPress = () => {
     console.log(pets);
   };
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      const storedUsername = await AsyncStorage.getItem('username');
+      const storedAvatar = await AsyncStorage.getItem('avatar');
+      setAvatarUser(String(storedAvatar));
+      setUsernameUsers(String(storedUsername));
+    };
+    fetchUser();
+  }, []);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -121,11 +134,11 @@ const Home = () => {
     <SafeAreaView style={styles.body}>
       <ScrollView style={styles.scrollView}>
         <View style={styles.headerBaner}>
-          <Text style={styles.text}>Welcome back!</Text>
-          <TouchableOpacity onPress={() => navigation.navigate("Profile")}>
+          <Text style={styles.text}>Welcome back! {usernameUsers}</Text>
+          <TouchableOpacity>
             <Image
               source={{
-                uri: "https://i.pinimg.com/736x/56/3f/0b/563f0b714e90f9195c1d63b09f5fb8e1.jpg",
+                uri: avatarUser,
               }}
               style={styles.imageBanner}
             />
