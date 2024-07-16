@@ -4,6 +4,7 @@ import { Link, Stack } from 'expo-router'
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import AxiosHelper from '../util/AxiosHelper';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Login = () => {
     const navigation = useNavigation();
@@ -16,21 +17,26 @@ const Login = () => {
     }
 
     const handleLogin = async() => {
-        // try {
-        //     const response = await AxiosHelper.post("/users/login",{
-        //         username: userName,
-        //         password: passwordUser
-        //     });
-        //     if(response.data.status == 1){
-        //         ToastAndroid.show("Đăng nhập thành công!", ToastAndroid.SHORT);
-        //         navigation.navigate("HomeScreen");
-        //     } else {
-        //         ToastAndroid.show("Đăng nhập thất bại!", ToastAndroid.SHORT);
-        //     }
-        // } catch (error) {
-        //     console.log(error);
-        // }
-        navigation.navigate("HomeScreen");
+        try {
+            const response = await AxiosHelper.post("/users/login",{
+                username: userName,
+                password: passwordUser
+            });
+            if(response.data.status == 1){
+                await AsyncStorage.setItem('userId', response.data.user._id);
+                await AsyncStorage.setItem('email', response.data.user.email);
+                await AsyncStorage.setItem('username', response.data.user.username);
+                await AsyncStorage.setItem('avatar', response.data.user.avatar);
+                await AsyncStorage.setItem('dob', response.data.user.birthDayOf);
+                await AsyncStorage.setItem('sdt', response.data.user.sdt);
+                ToastAndroid.show("Đăng nhập thành công!", ToastAndroid.SHORT);
+                navigation.navigate("HomeScreen");
+            } else {
+                ToastAndroid.show("Đăng nhập thất bại!", ToastAndroid.SHORT);
+            }
+        } catch (error) {
+            console.log(error);
+        }
     }
 
   return (

@@ -13,7 +13,7 @@ import Payment from './components/payment';
 import ForgotPass from './components/forgotpass';
 import VerifyOTP from './components/verifyotpcode';
 import SetPassword from './components/setpassword';
-import App from './components/DetailsScreen';
+import DetailsScreen from './components/DetailsScreen';
 import DetailsItemList from './components/DetailsItemList';
 import CartScreen from './(tabs)/cart';
 import PayScreen from './components/HomePay/payscreen';
@@ -23,6 +23,8 @@ import MainPaymentType from './components/HomePay/paymentType';
 import AddDress from './components/HomePay/addDress';
 import DetailAddress from './components/HomePay/addDress/detailAddress';
 import AddAddress from './components/HomePay/addDress/addAddress';
+import Cart from './(tabs)/cart'
+import DetailCatList from './components/DetailCatList';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -66,6 +68,9 @@ function HomeFragment (){
     screenOptions={{headerShown: false}}>
       <Stack.Screen name='Home' component={Home}/>
       <Stack.Screen name='DetailsItemList' component={DetailsItemList}/>
+      <Stack.Screen name='DetailCatList' component={DetailCatList}/>
+      {/* <Stack.Screen name='DetailHamList' component={DetailHamList}/> */}
+      <Stack.Screen name='DetailsScreen' component={DetailsScreen}/>
     </Stack.Navigator>
   )
 }

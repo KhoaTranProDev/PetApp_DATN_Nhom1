@@ -1,11 +1,44 @@
 import { Dimensions, Image, Modal, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
-import React, { useState } from 'react'
-import { Link, Stack, useNavigation } from 'expo-router'
 import SendNewPostModal from './modals/cart.newposts';
+import React, { useEffect, useState } from 'react'
+import { Link, Stack, useNavigation } from 'expo-router'
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import AxiosHelper from '../util/AxiosHelper';
+import axios from 'axios';
+
+interface User {
+    _id: string;
+    name: string;
+    email: string;
+    sdt: string;
+    username: string;
+    password: string;
+    avatar: string;
+    birthDayOf: string;
+}
 
 const Profile: React.FC<{ navigation: any }> = (props) => {
     const { navigation } = props;
     const [modalVisibleNewPost, setModalVisibleNewPost] = useState(false);
+
+    const [username, setUsername] = useState('');
+    const [emailUser, setEmailUser] = useState('');
+    const [avatarUser, setAvatarUser] = useState('');
+    const [user, setUser] = useState<User[]>([]);
+
+
+    useEffect(() => {
+        const fetchUser = async () => {
+          const storedUsername = await AsyncStorage.getItem('username');
+          const storedEmailUser = await AsyncStorage.getItem('email');
+          const storedAvatarUser = await AsyncStorage.getItem('avatar');
+          setAvatarUser(String(storedAvatarUser));
+          setUsername(String(storedUsername));
+          setEmailUser(String(storedEmailUser));
+        };
+        fetchUser();
+      }, []);
+
 
   return (
     <>
@@ -16,10 +49,10 @@ const Profile: React.FC<{ navigation: any }> = (props) => {
       <View style={styles.boxAccount}>
         <Image
         style={{width: 80, height: 80, borderRadius: 50}}
-        source={{uri:"https://i.pinimg.com/736x/56/3f/0b/563f0b714e90f9195c1d63b09f5fb8e1.jpg"}}/>
+        source={{uri: avatarUser}}/>
         <View style={styles.middleBoxAccount}>
-            <Text style={styles.nameText}>Khoa Trần</Text>
-            <Text style={styles.emailText}>khoatldps24667@fpt.edu.vn</Text>
+            <Text style={styles.nameText}>{username}</Text>
+            <Text style={styles.emailText}>{emailUser}</Text>
             <Text style={styles.txtMoney}>Ví: 8888</Text>
         </View>
       </View>
@@ -54,7 +87,8 @@ const Profile: React.FC<{ navigation: any }> = (props) => {
 
       
 
-      <TouchableOpacity style={styles.boxOrderDetail}>
+      <TouchableOpacity 
+      style={styles.boxOrderDetail}>
         <View style={styles.boxUser}>
             <Image style={{width:30, height: 30}} source={require('./img/oderIcon.png')}/>
         </View>

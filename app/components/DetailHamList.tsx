@@ -30,8 +30,7 @@ interface Pet {
   status: string;
 }
 
-
-function DetailsItemList(): React.JSX.Element {
+function DetailCatList(): React.JSX.Element {
   const navigation = useNavigation();
   const [pets, setPets] = useState<Pet[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
@@ -56,6 +55,7 @@ function DetailsItemList(): React.JSX.Element {
         const petsResponse = await axios.get<Pet[]>(
           "https://apipetapp.onrender.com/pet"
         );
+
         setPets(petsResponse.data);
         setLoading(false);
         setfullData(petsResponse.data);
@@ -68,11 +68,11 @@ function DetailsItemList(): React.JSX.Element {
     fetchData();
   }, []);
 
-  const renderPetItem = ({ item }: { item: Pet}) => {
+  const renderPetItem = ({ item }: { item: Pet }) => {
     // const petImage = images.find(image => image._id === item.idimage);
 
     return (
-      <TouchableOpacity
+      <TouchableOpacity 
       onPress={() => navigation.navigate('DetailsScreen',{pet: item, imageURL: item.image[0]})}
       style={styles.item}>
         {item.image.map((imageURL, index) => (
@@ -118,7 +118,7 @@ function DetailsItemList(): React.JSX.Element {
           <Text style={styles.petText}>
             <Text
               style={{
-                color: "#CC5500",
+                color: "green",
               }}
             >
               Price:{" "}
@@ -130,8 +130,8 @@ function DetailsItemList(): React.JSX.Element {
     );
   };
 
-  const dogData = fullData.filter(
-    (pet) => pet.idspecies === "667062a9c593ca6c8b204c30"
+  const hamsterData = fullData.filter(
+    (pet) => pet.idspecies === "667067b5d6f7138e5f01dbb8"
   );
 
   return (
@@ -186,7 +186,7 @@ function DetailsItemList(): React.JSX.Element {
               color: "#000",
             }}
           >
-            Current Dog List
+            Current Hamster List
           </Text>
           <TouchableOpacity onPress={() => setmodalVisible(true)}>
             <AntDesign name="filter" size={25} />
@@ -200,14 +200,14 @@ function DetailsItemList(): React.JSX.Element {
             fontWeight: "400",
           }}
         >
-          {dogData.length} products found
+          {hamsterData.length} products found
         </Text>
 
         <View style={styles.containerBanner}>
           <View style={styles.bannerItem}>
             <View style={styles.petsContainer}>
               <FlatList
-                data={dogData}
+                data={hamsterData}
                 renderItem={renderPetItem}
                 keyExtractor={(item) => item._id}
                 contentContainerStyle={styles.scrollViewContent1}
@@ -434,4 +434,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default DetailsItemList;
+export default DetailCatList;
