@@ -8,7 +8,7 @@ export const GetRouteCat = (route: any) => {
     return 'none';
   } else if (routeName?.includes('AddDress')) {
     return 'none';
-  } else if (routeName?.includes('DetailAddress')) {
+  } else if (routeName?.includes('UpdateAddress')) {
     return 'none';
   } else if (routeName?.includes('AddAddress')) {
     return 'none';

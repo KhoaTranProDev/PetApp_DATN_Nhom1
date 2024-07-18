@@ -7,20 +7,25 @@ import { styles } from "../styles/payScreen";
 // data
 import { DataAddress, DataCart } from "../Data";
 
-const PayScreen: React.FC<{ route: any; navigation: any }> = ({
-  route,
-  navigation,
-}) => {
-  const { selectedOption } = route?.params ?? { selectedOption: "cash" };
+interface Props {
+  route: any;
+  navigation: any;
+}
+
+const PayScreen: React.FC<Props> = ({ route, navigation }) => {
+  const { selectedOption = "cash", totalPriceTxt, listPickPet, user } = route?.params ?? {};
   const [paymentOption, setPaymentOption] = useState<string | null>(selectedOption);
+  const ship = 15000;
+  
+  // console.log("selectedOption in PayScreen", selectedOption);
 
   useEffect(() => {
-    if (route.params?.selectedOption) {
-      setPaymentOption(route.params.selectedOption);
+    if (route?.params?.selectedOption) {
+      setPaymentOption(route?.params?.selectedOption);
     } else {
       setPaymentOption("cash");
     }
-  }, [route.params?.selectedOption]);
+  }, [route?.params?.selectedOption]);
 
   const paymentOptionConvert = (option: string | null) => {
     switch (option) {
@@ -39,7 +44,9 @@ const PayScreen: React.FC<{ route: any; navigation: any }> = ({
     }
   };
 
-  console.log("paymentOption", paymentOption);
+  const formatNumberTT = (num: number) => {
+    return num.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1.");
+  }
 
   return (
     <View style={styles.ContainerMain}>
@@ -64,23 +71,27 @@ const PayScreen: React.FC<{ route: any; navigation: any }> = ({
         {/* Frame Product */}
         <View style={styles.frameProduct}>
           <View style={styles.frameImg}>
-            <Image style={styles.imgProduct} source={DataCart[0].image} />
+            <Image style={styles.imgProduct} source={{uri: listPickPet[0]?.idPet?.image[0]}} />
           </View>
           <View style={styles.frameInfo}>
             <View style={styles.showProduct}>
-              <Text style={styles.txtNameProduct}>{DataCart[0].name}</Text>
+              <Text style={styles.txtNameProduct}>{listPickPet[0]?.idPet?.name}</Text>
               <TouchableOpacity
-                onPress={() => navigation.navigate("DetailProduct")}
+                onPress={() => navigation.navigate("DetailProduct", {listPickPet, user})}
               >
                 <Text style={styles.txtShowMore}>
-                  Xem thêm ({DataCart.length})
+                  Xem thêm ({listPickPet?.length})
                 </Text>
               </TouchableOpacity>
             </View>
-            <Text style={styles.txtUser}>{DataCart[0].idUser}</Text>
+            <Text style={styles.txtUser}>{listPickPet[0]?.idPet?.idUser?.name}</Text>
             <View style={styles.framePrice}>
-              <Text style={styles.txtPrice}>{DataCart[0].price}</Text>
-              <Text style={styles.txtQuantity}>x{DataCart[0].quantity}</Text>
+              <Text style={styles.txtPrice}>{formatNumberTT(totalPriceTxt)} Đ</Text>
+              <TouchableOpacity
+                onPress={() => navigation.navigate("DetailProduct", {listPickPet, user})}
+              >
+              <Text style={styles.txtQuantity}>x{listPickPet?.length}</Text>
+              </TouchableOpacity>
             </View>
           </View>
         </View>
@@ -92,6 +103,9 @@ const PayScreen: React.FC<{ route: any; navigation: any }> = ({
             onPress={() =>
               navigation.navigate("MainPaymentType", {
                 selectedOption: paymentOption,
+                totalPriceTxt,
+                listPickPet,
+                user,
               })
             }
           >
@@ -108,19 +122,19 @@ const PayScreen: React.FC<{ route: any; navigation: any }> = ({
           <View style={styles.frameDetailProduct}>
             <View style={styles.frameDetail}>
               <Text style={styles.txtDetail}>Tạm tính</Text>
-              <Text style={styles.txtDetail}>$ 2.495</Text>
+              <Text style={styles.txtDetail}>{formatNumberTT(totalPriceTxt)} Đ</Text>
             </View>
             <View style={styles.frameDetail}>
               <Text style={styles.txtDetail}>Phí giao hàng</Text>
-              <Text style={styles.txtDetail}>$ 2.495</Text>
+              <Text style={styles.txtDetail}>{formatNumberTT(ship)} Đ</Text>
             </View>
             <View style={styles.frameDetail}>
               <Text style={styles.txtDetail}>Giảm giá</Text>
-              <Text style={styles.txtDetail}>$ 2.495</Text>
+              <Text style={styles.txtDetail}>0 Đ</Text>
             </View>
             <View style={styles.frameTotal}>
               <Text style={styles.txtDetail}>Tổng cộng</Text>
-              <Text style={styles.txtDetail}>$ 2.495</Text>
+              <Text style={styles.txtDetail}>{formatNumberTT(totalPriceTxt + ship)} Đ</Text>
             </View>
           </View>
         </View>
@@ -128,7 +142,7 @@ const PayScreen: React.FC<{ route: any; navigation: any }> = ({
         <View style={styles.frameAdress}>
           <View style={styles.frameTxtAdress}>
             <Text style={styles.txtAdress}>Địa chỉ nhận hàng</Text>
-            <TouchableOpacity onPress={() => navigation.navigate("AddDress")}>
+            <TouchableOpacity onPress={() => navigation.navigate("AddDress", {listPickPet, user})}>
               <Text style={styles.txtAdressUpdate}>Thay đổi</Text>
             </TouchableOpacity>
           </View>

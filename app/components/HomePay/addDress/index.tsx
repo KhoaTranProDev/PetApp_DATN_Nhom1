@@ -1,4 +1,6 @@
 import {
+  ActivityIndicator,
+  Alert,
   FlatList,
   Image,
   Linking,
@@ -7,15 +9,74 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import React from "react";
+import React, { useEffect, useState } from "react";
 
 // data
-import { DataAddress } from "../../Data";
+import { deleteAddress, getListPayIdUser } from "../../services/pay";
+import { GestureHandlerRootView, Swipeable } from "react-native-gesture-handler";
 
-const AddDress: React.FC<{ navigation: any }> = (props) => {
-  const { navigation } = props;
+interface Props {
+  route: any;
+  navigation: any;
+}
+
+const AddDress: React.FC<Props> = ({ route, navigation }) => {
+  const { user } = route?.params;
+  const [addAddress, setAddAddress] = useState<any>([]);
+  const [refreshing, setRefreshing] = useState(false);
+
+  const onGetListPayIdUser = async () => {
+    setRefreshing(true);
+    const res = await getListPayIdUser(user._id);
+    res.sort((a: any, b: any) => (a.defaultA === b.defaultA ? 0 : a.defaultA ? -1 : 1));
+    setAddAddress(res);
+    setRefreshing(false);
+  };
+
+  const onRefresh = async () => {
+    setRefreshing(true);
+    await onGetListPayIdUser();
+    setRefreshing(false);
+  };
+
+  const handleDelete = (id: string) => {
+    Alert.alert(
+      `Cẩn thận !!!`,
+      "Bạn có chắc muốn xóa địa chỉ này không ?",
+      [
+        {
+          text: "Cancel",
+          style: "cancel",
+        },
+        {
+          text: "OK",
+          onPress: async () => {
+            try {
+              await deleteAddress(user._id, id);
+              await onGetListPayIdUser();
+            } catch (error) {
+              console.log("Lỗi handleDelete ở cart (tabs): ", error);
+            }
+          }
+        },
+      ]
+    );
+  };
+
+  useEffect(() => {
+    onGetListPayIdUser();
+  }, []);
+
+  useEffect(() => {
+    const unsubscribe = navigation.addListener('focus', () => {
+      onGetListPayIdUser();
+    });
+  
+    return unsubscribe;
+  }, [navigation]);
 
   return (
+    <GestureHandlerRootView style={{ flex: 1 }}>
     <View style={styles.ContainerMain}>
       {/* header */}
       <View style={styles.header}>
@@ -26,7 +87,7 @@ const AddDress: React.FC<{ navigation: any }> = (props) => {
           />
         </TouchableOpacity>
         <Text style={styles.txtThanhToan}>Chọn địa chỉ giao hàng</Text>
-        <TouchableOpacity onPress={() => Linking.openURL('tel:0900332211')}>
+        <TouchableOpacity onPress={() => Linking.openURL("tel:0900332211")}>
           <Image
             style={styles.imgCall}
             source={require("../../image/call_50px.png")}
@@ -40,10 +101,26 @@ const AddDress: React.FC<{ navigation: any }> = (props) => {
         </View>
         {/* List address */}
         <FlatList
-          data={DataAddress}
+          data={addAddress}
           showsVerticalScrollIndicator={false}
-          keyExtractor={(item) => item.id}
+          keyExtractor={(item) => item._id}
+          refreshing={refreshing}
+          onRefresh={onRefresh}
           renderItem={({ item }) => (
+            <Swipeable
+            key={item._id}
+            renderRightActions={() => (
+              <TouchableOpacity
+                onPress={() => handleDelete(item?._id)}
+                style={styles.btnDelete}
+              >
+                <Image
+                  style={styles.imgDelete}
+                  source={require("../../image/Delete_25px.png")}
+                />
+              </TouchableOpacity>
+            )}
+          >
             <View style={styles.frameAddress}>
               <View style={styles.frameInfoAddress}>
                 <View
@@ -58,19 +135,20 @@ const AddDress: React.FC<{ navigation: any }> = (props) => {
                   </View>
                   <TouchableOpacity
                     onPress={() =>
-                      navigation.navigate("DetailAddress", { item })
+                      navigation.navigate("UpdateAddress", { item, user })
                     }
                   >
                     <Text style={styles.txtFront14}>Sửa</Text>
                   </TouchableOpacity>
                 </View>
-                <Text style={styles.txtFront14}>{item.address}</Text>
+                <Text style={styles.txtFront14}>{item?.address[0].name}</Text>
                 <Text style={styles.txtFront14}>{item.typeAddress}</Text>
-                {item.status ? (
+                {item.defaultA ? (
                   <Text style={styles.txtMD}>Mặc định</Text>
                 ) : null}
               </View>
             </View>
+            </Swipeable>
           )}
         />
       </View>
@@ -79,12 +157,13 @@ const AddDress: React.FC<{ navigation: any }> = (props) => {
         {/* add address */}
         <TouchableOpacity
           style={styles.addAddress}
-          onPress={() => navigation.navigate("AddAddress")}
+          onPress={() => navigation.navigate("AddAddress", {user})}
         >
           <Text style={styles.txtAddAddress}>Thêm địa chỉ mới</Text>
         </TouchableOpacity>
       </View>
     </View>
+    </GestureHandlerRootView>
   );
 };
 
@@ -141,7 +220,8 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     borderWidth: 1,
     borderColor: "#B3B3B3",
-    borderRadius: 10,
+    borderTopLeftRadius: 10,
+    borderBottomLeftRadius: 10,
     padding: 16,
     paddingBottom: 10,
     paddingTop: 10,
@@ -167,6 +247,21 @@ const styles = StyleSheet.create({
     paddingLeft: 8,
     borderRadius: 5,
     marginTop: 5,
+  },
+  // delete
+  btnDelete: {
+    width: 71,
+    height: 83,
+    borderTopRightRadius: 10,
+    borderBottomRightRadius: 10,
+    backgroundColor: "#A42B32",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  imgDelete: {
+    position: "relative",
+    width: 30,
+    height: 30,
   },
   // footer
   footer: {

@@ -5,12 +5,18 @@ import React, { useState } from "react";
 import { styles } from "../../styles/mainPaymentType";
 import { PaymentSalesData } from "../../Data";
 
-const MainPaymentType: React.FC<{ route: any, navigation: any }> = ({ route, navigation }) => {
-  const { selectedOption = 'cash' } = route?.params ?? {};
+interface Props {
+  route: any;
+  navigation: any;
+}
+
+const MainPaymentType: React.FC<Props> = ({ route, navigation }) => {
+  const { selectedOption = "cash", totalPriceTxt, listPickPet, user } = route?.params ?? {};
 
   const handleOptionSelect = (option: string) => {
-    navigation.navigate('PayScreen', { selectedOption: option });
-  }
+    console.log("option", option);
+    navigation.navigate('PayScreen', { selectedOption: option, totalPriceTxt, listPickPet, user });
+}
 
   // console.log("selectedOption", selectedOption);
 

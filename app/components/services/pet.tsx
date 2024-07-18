@@ -2,6 +2,7 @@ import AxiosHelper from "@/app/util/AxiosHelper";
 import axios from "axios";
 
 // Gửi bài đăng
+// /pet/add
 export const sendNewPost = async (data: any) => {
   try {
     const res = await AxiosHelper.post("/pet/add", data);
@@ -13,6 +14,7 @@ export const sendNewPost = async (data: any) => {
 };
 
 // Upload ảnh cloudinary
+// /pet/upload-image
 export const uploadImageStatus = async (form: any) => {
     try {
       const response = await AxiosHelper.post('/pet/upload-image', form, {

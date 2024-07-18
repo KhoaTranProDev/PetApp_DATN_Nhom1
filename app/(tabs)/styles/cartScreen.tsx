@@ -64,7 +64,7 @@ export const styles = StyleSheet.create({
   },
   btnDelete: {
     width: 71,
-    height: 95,
+    height: 90,
     backgroundColor: "#A42B32",
     justifyContent: "center",
     alignItems: "center",
@@ -91,7 +91,7 @@ export const styles = StyleSheet.create({
     paddingLeft: 20,
   },
   txtPrice: {
-    color: "#6D3805",
+    color: "#B2030C",
     fontSize: 16,
     fontWeight: "400",
     paddingLeft: 15,

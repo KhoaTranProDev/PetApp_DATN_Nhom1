@@ -1,22 +1,98 @@
-import { Image, ScrollView, StyleSheet, Switch, Text, TextInput, TouchableOpacity, View } from "react-native";
-import React, { useState } from "react";
+import {
+  Image,
+  ScrollView,
+  StyleSheet,
+  Switch,
+  Text,
+  TextInput,
+  ToastAndroid,
+  TouchableOpacity,
+  View,
+} from "react-native";
+import React, { useEffect, useState } from "react";
 import MapView, { Marker } from "react-native-maps";
+import {
+  getListPayIdUser,
+  updateAddress,
+  updateAddressDefaultA,
+} from "../../services/pay";
 
 interface Coordinates {
   latitude: number;
   longitude: number;
 }
 
-const DetailAddress: React.FC<{ navigation: any, route: any }> = (props) => {
-  const { navigation } = props;
-  const { route } = props;
-  const data = route?.params?.item;
-  const [selectedLocation, setSelectedLocation] = useState<Coordinates | null>(null);
+interface Props {
+  navigation: any;
+  route: any;
+}
+
+const UpdateAddress: React.FC<Props> = ({ navigation, route }) => {
+  const { item, user } = route?.params;
+  const [selectedLocation, setSelectedLocation] = useState<Coordinates | null>(
+    null
+  );
+  const [switchS, setSwitchS] = useState(false);
+  const [addAressData, setAddressData] = useState<any>([]);
+  const [name, setName] = useState(item.name);
+  const [phone, setPhone] = useState(item.phone);
+  const [address, setAddress] = useState(item?.address[0]?.name);
+  const [district, setDistrict] = useState(item?.address[1]?.name);
+  const [city, setCity] = useState(item?.address[2]?.name);
+  const [typeAddress, setTypeAddress] = useState(item.typeAddress);
+
+  console.log("name", name);
+  console.log("phone", phone);
+  console.log("address", address);
+  console.log("district", district);
+  console.log("city", city);
+  console.log("typeAddress", typeAddress);
 
   const handleMapPress = (event: any) => {
-      const { latitude, longitude } = event.nativeEvent.coordinate;
-      setSelectedLocation({ latitude, longitude });
-      console.log('Selected location:', { latitude, longitude });
+    const { latitude, longitude } = event.nativeEvent.coordinate;
+    setSelectedLocation({ latitude, longitude });
+    console.log("Selected location:", { latitude, longitude });
+  };
+
+  const changleSwitch = async () => {
+    if (item.defaultA) {
+      item.defaultA = false;
+      setSwitchS(!switchS);
+      await updateAddressDefaultA(user._id, item._id);
+    } else if (item.defaultA === false) {
+      item.defaultA = true;
+      setSwitchS(!switchS);
+      await updateAddressDefaultA(user._id, item._id);
+    } else {
+      if (switchS === false) {
+        const check = addAressData.find((item: any) => item.defaultA === true);
+        if (check) {
+          ToastAndroid.show("Đã có địa chỉ mặc định", ToastAndroid.SHORT);
+          return;
+        }
+      }
+      setSwitchS((prev) => !prev);
+    }
+    setSwitchS(!switchS);
+  };
+
+  const onGetListPayIdUser = async () => {
+    const res = await getListPayIdUser(user._id);
+    setAddressData(res);
+  };
+  useEffect(() => {
+    onGetListPayIdUser();
+  }, [switchS]);
+
+  const handleUpdateAddress = async () => {
+    const data = {
+      name,
+      phone,
+      address: [{ name: address }, { name: district }, { name: city }],
+      typeAddress,
+    };
+    await updateAddress(user._id, item._id, data);
+    navigation.goBack();
   };
 
   return (
@@ -30,7 +106,7 @@ const DetailAddress: React.FC<{ navigation: any, route: any }> = (props) => {
           />
         </TouchableOpacity>
         <Text style={styles.txtThanhToan}>Sửa địa chỉ</Text>
-        <TouchableOpacity>
+        <TouchableOpacity onPress={handleUpdateAddress}>
           <Text style={styles.txtSave}>Lưu</Text>
         </TouchableOpacity>
       </View>
@@ -42,35 +118,40 @@ const DetailAddress: React.FC<{ navigation: any, route: any }> = (props) => {
           <TextInput
             style={styles.inputContact}
             placeholder="Nhập tên của bạn"
-            defaultValue={data.name}
+            defaultValue={item.name}
+            onChange={(e) => setName(e.nativeEvent.text)}
           />
           <TextInput
             style={styles.inputContact}
             placeholder="Nhập số điện thoại của bạn"
-            defaultValue={data.phone}
+            defaultValue={item.phone}
+            onChange={(e) => setPhone(e.nativeEvent.text)}
           />
         </View>
         {/* Address */}
-        <View style={[styles.contact, {marginTop: 20}]}>
+        <View style={[styles.contact, { marginTop: 20 }]}>
           <Text style={styles.txtContact}>Địa chỉ</Text>
           <TextInput
             style={styles.inputContact}
             placeholder="Nhập địa chỉ của bạn"
-            defaultValue={data.address}
+            defaultValue={item?.address[0]?.name}
+            onChange={(e) => setAddress(e.nativeEvent.text)}
           />
           <TextInput
             style={styles.inputContact}
             placeholder="Nhập quận/huyện của bạn"
-            defaultValue={data.district}
+            defaultValue={item?.address[1]?.name}
+            onChange={(e) => setDistrict(e.nativeEvent.text)}
           />
           <TextInput
             style={styles.inputContact}
             placeholder="Nhập tỉnh/thành phố của bạn"
-            defaultValue={data.city}
+            defaultValue={item?.address[2]?.name}
+            onChange={(e) => setCity(e.nativeEvent.text)}
           />
         </View>
         {/* Map */}
-        <View style={[styles.contact, {marginTop: 20}]}>
+        <View style={[styles.contact, { marginTop: 20 }]}>
           <Text style={styles.txtContact}>Bản đồ</Text>
           <MapView
             style={styles.map}
@@ -82,9 +163,7 @@ const DetailAddress: React.FC<{ navigation: any, route: any }> = (props) => {
             }}
             onPress={handleMapPress}
           >
-            {selectedLocation && (
-              <Marker coordinate={selectedLocation} />
-            )}
+            {selectedLocation && <Marker coordinate={selectedLocation} />}
           </MapView>
         </View>
         {/* Setting */}
@@ -96,27 +175,28 @@ const DetailAddress: React.FC<{ navigation: any, route: any }> = (props) => {
             <TextInput
               style={styles.inputTypeAddress}
               placeholder="Nhập loại địa chỉ của bạn"
-              defaultValue={data.typeAddress}
+              defaultValue={item.typeAddress}
+              onChange={(e) => setTypeAddress(e.nativeEvent.text)}
             />
-        </View>
-        {/* Default address */}
-        <View style={styles.defaultAddress}>
-          <Text style={styles.txtDefaultAddress}>Đặt làm mặc định:</Text>
-          <Switch
-            trackColor={{ false: "#767577", true: "#81b0ff" }}
-            thumbColor={data.status ? "#f5dd4b" : "#f4f3f4"}
-            ios_backgroundColor="#3e3e3e"
-            onValueChange={() => {}}
-            value={data.status}
-          />
-        </View>
+          </View>
+          {/* Default address */}
+          <View style={styles.defaultAddress}>
+            <Text style={styles.txtDefaultAddress}>Đặt làm mặc định:</Text>
+            <Switch
+              trackColor={{ false: "#767577", true: "#81b0ff" }}
+              thumbColor={item.status ? "#f5dd4b" : "#f4f3f4"}
+              ios_backgroundColor="#3e3e3e"
+              onValueChange={changleSwitch}
+              value={item.defaultA}
+            />
+          </View>
         </View>
       </ScrollView>
     </View>
   );
 };
 
-export default DetailAddress;
+export default UpdateAddress;
 
 const styles = StyleSheet.create({
   ContainerMain: {
@@ -151,7 +231,7 @@ const styles = StyleSheet.create({
     marginTop: 15,
   },
   body: {
-    paddingBottom: 10
+    paddingBottom: 10,
   },
   // Contact
   contact: {

@@ -10,6 +10,7 @@ import {
   TextInput,
   Button,
   ActivityIndicator,
+  ToastAndroid,
 } from "react-native";
 import React, { useCallback, useEffect, useState } from "react";
 
@@ -23,7 +24,7 @@ import { styles } from "./styles/cartScreen";
 import Swipeable from "react-native-gesture-handler/Swipeable";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import CheckBox from "expo-checkbox";
-import { getCartAll, getCartIdUser } from "../components/services/cart";
+import { deleteIdCart, getCartAll, getCartIdUser } from "../components/services/cart";
 import SendNewPostModal from "./modals/cart.newposts";
 import { launchImageLibrary } from "react-native-image-picker";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -63,6 +64,8 @@ const CartScreens: React.FC<{ navigation: any }> = (props) => {
   const [modalVisibleNewPost, setModalVisibleNewPost] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [user, setUser] = useState<any>({});
+  const [listPickPet, setListPickPet] = useState<any>([]);
+  const [refreshing, setRefreshing] = useState(false);
 
   const handleDelete = (id: string, name: string) => {
     Alert.alert(
@@ -75,11 +78,15 @@ const CartScreens: React.FC<{ navigation: any }> = (props) => {
         },
         {
           text: "OK",
-          onPress: () => {
-            setCartData((prev: any) =>
-              prev.filter((item: any) => item.id !== id)
-            );
-          },
+          onPress: async () => {
+            try {
+              await deleteIdCart(id);
+              const resCart = await getCartIdUser(user?._id);
+              setCartData(resCart);
+            } catch (error) {
+              console.log("Lỗi handleDelete ở cart (tabs): ", error);
+            }
+          }
         },
       ]
     );
@@ -91,8 +98,8 @@ const CartScreens: React.FC<{ navigation: any }> = (props) => {
       updatedItems[id] = !prev[id];
 
       if (id === "all") {
-        Object.keys(updatedItems).forEach((itemId) => {
-          updatedItems[itemId] = updatedItems[id];
+        cartData.forEach((item: any) => {
+          updatedItems[item?._id] = updatedItems[id];
         });
       } else {
         updatedItems["all"] = Object.keys(updatedItems).every(
@@ -103,13 +110,20 @@ const CartScreens: React.FC<{ navigation: any }> = (props) => {
       let totalPrice = 0;
       Object.keys(updatedItems).forEach((itemId) => {
         if (updatedItems[itemId]) {
-          const selectedItem = cartData.find((item: any) => item._id === itemId);
+          const selectedItem = cartData.find(
+            (item: any) => item?._id === itemId
+          );
           totalPrice += selectedItem ? Number(selectedItem.idPet.price) : 0;
         }
       });
 
       setTotalPrice(totalPrice);
       setTotalPriceTxt(totalPrice);
+
+      const listPickPetTemp = cartData.filter(
+        (item: any) => updatedItems[item?._id]
+      );
+      setListPickPet(listPickPetTemp);
 
       return updatedItems;
     });
@@ -118,14 +132,14 @@ const CartScreens: React.FC<{ navigation: any }> = (props) => {
   const formatNumber = (num: number) => {
     let formattedNum = num.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1.");
     if (formattedNum.length > 6) {
-        formattedNum = formattedNum.slice(0, formattedNum.length - 3) + ".";
+      formattedNum = formattedNum.slice(0, formattedNum.length - 3) + ".";
     }
     return formattedNum;
-};
+  };
 
-const formatNumberTT = (num: number) => {
-  return num.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1.");
-}
+  const formatNumberTT = (num: number) => {
+    return num.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1.");
+  };
 
   const toggleGroupCheckbox = (idUser: string) => {
     setCheckedItems((prev) => {
@@ -135,8 +149,8 @@ const formatNumberTT = (num: number) => {
       updatedItems[idUser] = allChecked;
 
       cartData.forEach((item: any) => {
-        if (item.idPet.idUser._id === idUser) {
-          updatedItems[item._id] = allChecked;
+        if (item.idPet.idUser?._id === idUser) {
+          updatedItems[item?._id] = allChecked;
         }
       });
 
@@ -147,7 +161,9 @@ const formatNumberTT = (num: number) => {
       let totalPrice = 0;
       Object.keys(updatedItems).forEach((itemId) => {
         if (updatedItems[itemId]) {
-          const selectedItem = cartData.find((item: any) => item._id === itemId);
+          const selectedItem = cartData.find(
+            (item: any) => item?._id === itemId
+          );
           totalPrice += selectedItem ? Number(selectedItem.idPet.price) : 0;
         }
       });
@@ -155,16 +171,25 @@ const formatNumberTT = (num: number) => {
       setTotalPrice(totalPrice);
       setTotalPriceTxt(totalPrice);
 
+      const listPickPetTemp = cartData.filter(
+        (item: any) => updatedItems[item?._id]
+      );
+      setListPickPet(listPickPetTemp);
+
       return updatedItems;
     });
   };
+
+  const handleNotifiTT = () => {
+    ToastAndroid.show("Vui lòng chọn một em pet để thanh toán nhé ! ^^", ToastAndroid.SHORT);
+  }
 
   const renderProduct = (product: any) => (
     <Swipeable
       key={product._id}
       renderRightActions={() => (
         <TouchableOpacity
-          onPress={() => handleDelete(product._id, product?.idPet?.name)}
+          onPress={() => handleDelete(product?._id, product?.idPet?.name)}
           style={styles.btnDelete}
         >
           <Image
@@ -174,7 +199,7 @@ const formatNumberTT = (num: number) => {
         </TouchableOpacity>
       )}
     >
-      {product?.idPet?.idUser._id !== user?._id && (
+      {product?.idPet?.idUser?._id !== user?._id && (
         <View style={styles.frameProduct}>
           <Image
             style={styles.imgProduct}
@@ -190,8 +215,8 @@ const formatNumberTT = (num: number) => {
             >
               <Text style={styles.nameProduct}>{product?.idPet?.name}</Text>
               <CheckBox
-                value={checkedItems[product._id] || false}
-                onValueChange={() => toggleCheckbox(product._id)}
+                value={checkedItems[product?._id] || false}
+                onValueChange={() => toggleCheckbox(product?._id)}
                 style={{ width: 20, height: 20, marginTop: 10 }}
               />
             </View>
@@ -207,7 +232,7 @@ const formatNumberTT = (num: number) => {
             >
               <Text style={styles.txtAlike}>Loài: {product?.idPet?.alike}</Text>
               <Text style={styles.txtPrice}>
-                {formatNumber(product?.idPet?.price)} VNĐ
+                {formatNumber(product?.idPet?.price)} Đ
               </Text>
             </View>
           </View>
@@ -218,20 +243,19 @@ const formatNumberTT = (num: number) => {
 
   const renderGroup = ({ item }: { item: any }) => {
     return (
-      <View key={item.items[0].idPet.idUser._id}>
-        <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
+      <View key={item?.items[0]?.idPet?.idUser?._id}>
           <View style={styles.frameCheckBoxAll}>
-            <Text style={styles.userHeader}>{item?.items[0].idPet?.idUser?.name}</Text>
+            <Text style={styles.userHeader}>
+              {item?.items[0].idPet?.idUser?.name}
+            </Text>
             <CheckBox
-              value={checkedItems[item.items[0].idPet.idUser._id] || false}
-              onValueChange={() => toggleGroupCheckbox(item.items[0].idPet.idUser._id)}
+              value={checkedItems[item.items[0].idPet?.idUser?._id] || false}
+              onValueChange={() =>
+                toggleGroupCheckbox(item.items[0].idPet?.idUser?._id)
+              }
               style={styles.checkBoxAll}
             />
           </View>
-          <TouchableOpacity>
-            <Text style={styles.txtUpdatePdAll}>Sửa</Text>
-          </TouchableOpacity>
-        </View>
         {item.items.map((product: any) => renderProduct(product))}
       </View>
     );
@@ -239,11 +263,11 @@ const formatNumberTT = (num: number) => {
 
   const onGetUserId = async () => {
     try {
+      setIsLoading(true);
       const userId = await AsyncStorage.getItem("userId");
       const resIdUser = await getDetailUser(userId);
-      setUser(resIdUser.user);
-      setIsLoading(true);
-      const resCart = await getCartIdUser(resIdUser.user._id);
+      setUser(resIdUser?.user);
+      const resCart = await getCartIdUser(resIdUser?.user?._id);
       setCartData(resCart);
       setIsLoading(false);
     } catch (error) {
@@ -251,6 +275,12 @@ const formatNumberTT = (num: number) => {
     }
   };
 
+  const onRefresh = async () => {
+    setRefreshing(true);
+    await onGetUserId();
+    setRefreshing(false);
+  };
+  
   // console.log("cartData: ", cartData.map((item: any) => item?.idPet.idUser));
 
   useEffect(() => {
@@ -306,6 +336,8 @@ const formatNumberTT = (num: number) => {
               updateCellsBatchingPeriod={3000}
               removeClippedSubviews={true}
               onEndReachedThreshold={0.5}
+              refreshing={refreshing}
+              onRefresh={onRefresh} 
             />
 
             {/* footer */}
@@ -322,21 +354,40 @@ const formatNumberTT = (num: number) => {
                 <View style={{ flexDirection: "row", alignItems: "center" }}>
                   <Text style={styles.txtTotal}>Tạm tính:</Text>
                   <Text style={styles.txtPriceTT}>
-                    {formatNumberTT(totalPrice)} VNĐ
+                    {formatNumberTT(totalPrice)} Đ
                   </Text>
                 </View>
               </View>
               <View style={{ flexDirection: "row", justifyContent: "center" }}>
-                <TouchableOpacity
-                  style={styles.btnCheckout}
-                  onPress={() => navigation.navigate("PayScreen")}
-                >
-                  <Text
-                    style={{ fontSize: 18, fontWeight: "700", color: "#fff" }}
+                {listPickPet.length > 0 ? (
+                  <TouchableOpacity
+                    style={styles.btnCheckout}
+                    onPress={() =>
+                      navigation.navigate("PayScreen", {
+                        totalPriceTxt,
+                        listPickPet,
+                        user
+                      })
+                    }
                   >
-                    Thanh toán: {formatNumberTT(totalPriceTxt)}
-                  </Text>
-                </TouchableOpacity>
+                    <Text
+                      style={{ fontSize: 18, fontWeight: "700", color: "#fff" }}
+                    >
+                      Thanh toán: {formatNumberTT(totalPriceTxt)}
+                    </Text>
+                  </TouchableOpacity>
+                ) : (
+                  <TouchableOpacity
+                    style={styles.btnCheckout}
+                    onPress={handleNotifiTT}
+                  >
+                    <Text
+                      style={{ fontSize: 18, fontWeight: "700", color: "#fff" }}
+                    >
+                      Thanh toán: {formatNumberTT(totalPriceTxt)}
+                    </Text>
+                  </TouchableOpacity>
+                )}
               </View>
             </View>
           </View>

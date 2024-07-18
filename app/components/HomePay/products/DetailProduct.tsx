@@ -1,64 +1,58 @@
 import {
-    Alert,
+  Alert,
   FlatList,
   Image,
   Linking,
   StyleSheet,
   Text,
+  ToastAndroid,
   TouchableOpacity,
   View,
 } from "react-native";
 import React, { useState } from "react";
 
-// data
-import { DataCart } from "../../Data";
-
 // lib
 import { Swipeable } from "react-native-gesture-handler";
+import { deleteIdCart } from "../../services/cart";
+import CheckBox from "expo-checkbox";
+
+interface Props {
+  route: any;
+  navigation: any;
+}
 
 const groupItemsByUser = (data: any) => {
-    const grouped = data.reduce((acc: any, item: any) => {
-      const { idUser } = item;
-      if (!acc[idUser]) {
-        acc[idUser] = [];
-      }
-      acc[idUser].push(item);
-      return acc;
-    }, {});
-    return Object.entries(grouped).map(([idUser, items]) => ({
-      idUser,
-      items,
-    }));
-  };
-  
-const DetailProduct: React.FC<{ navigation: any }> = (props) => {
-  const { navigation } = props;
-  const [data, setData] = useState(DataCart);
+  const grouped = data.reduce((acc: any, item: any) => {
+    const userId = item?.idPet?.idUser?._id;
+    if (!acc[userId]) {
+      acc[userId] = [];
+    }
+    acc[userId].push(item);
+    return acc;
+  }, {});
+  return Object.entries(grouped).map(([idUser, items]) => ({
+    idUser,
+    items,
+  }));
+};
 
-  const handleDelete = (id: string, name: string) => {
-    Alert.alert(
-      `Sản phẩm ${name}`,
-      "Bạn có chắc muốn xóa sản phẩm này không ?",
-      [
-        {
-          text: "Cancel",
-          style: "cancel",
-        },
-        {
-          text: "OK",
-          onPress: () => {
-            setData((prev) => prev.filter((item) => item.id !== id));
-          },
-        },
-      ]
-    );
+const DetailProduct: React.FC<Props> = ({ navigation, route }) => {
+  const { listPickPet, user } = route?.params;
+
+  const handleDelete = () => {
+    ToastAndroid.show("Vui lòng quay lại giỏ hàng để hủy", ToastAndroid.SHORT);
   };
+
+  const formatNumber = (num: number) => {
+    return num.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1.");
+  };
+
   const renderProduct = (product: any) => (
     <Swipeable
-      key={product.id}
+      key={product._id}
       renderRightActions={() => (
         <TouchableOpacity
-          onPress={() => handleDelete(product.id, product.name)}
+          onPress={handleDelete}
           style={styles.btnDelete}
         >
           <Image
@@ -68,28 +62,54 @@ const DetailProduct: React.FC<{ navigation: any }> = (props) => {
         </TouchableOpacity>
       )}
     >
-    <View style={styles.frameProduct}>
-      <View style={styles.frameImg}>
-        <Image style={styles.imgProduct} source={product.image} />
-      </View>
-      <View style={styles.frameInfo}>
-        <Text style={styles.txtNameProduct}>{product.name}</Text>
-        <Text style={styles.txtUser}>{product.idUser}</Text>
-        <View style={styles.framePrice}>
-          <Text style={styles.txtPrice}>{product.price}</Text>
-          <Text style={styles.txtQuantity}>x{product.quantity}</Text>
+      {product?.idPet?.idUser._id !== user?._id && (
+        <View style={styles.frameProduct}>
+          <Image
+            style={styles.imgProduct}
+            source={{ uri: product?.idPet?.image[0] }}
+          />
+          <View>
+            <View
+              style={{
+                width: "88%",
+                flexDirection: "row",
+                justifyContent: "space-between",
+              }}
+            >
+              <Text style={styles.nameProduct}>{product?.idPet?.name}</Text>
+            </View>
+            <Text style={styles.nameGram}>
+              Tuổi: {product?.idPet?.yearold} | Nặng: {product?.idPet?.weight}
+            </Text>
+            <View
+              style={{
+                width: "85%",
+                flexDirection: "row",
+                alignItems: "center",
+                justifyContent: "space-between",
+              }}
+            >
+              <Text style={styles.txtAlike}>Loài: {product?.idPet?.alike}</Text>
+              <Text style={styles.txtPrice}>
+                {formatNumber(product?.idPet?.price)} Đ
+              </Text>
+            </View>
+          </View>
         </View>
-      </View>
-    </View>
+      )}
     </Swipeable>
   );
 
-  const renderGroup = ({ item }: { item: any }) => (
-    <View key={item.idUser}>
-      <Text style={styles.userHeader}>{item.idUser}</Text>
-      {item.items.map(renderProduct)}
-    </View>
-  );
+  const renderGroup = ({ item }: { item: any }) => {
+    return (
+      <View key={item.items[0].idPet.idUser._id}>
+        <Text style={styles.userHeader}>
+          {item?.items[0].idPet?.idUser?.name}
+        </Text>
+        {item.items.map((product: any) => renderProduct(product))}
+      </View>
+    );
+  };
 
   return (
     <View style={styles.ContainerMain}>
@@ -102,7 +122,7 @@ const DetailProduct: React.FC<{ navigation: any }> = (props) => {
           />
         </TouchableOpacity>
         <Text style={styles.txtThanhToan}>Chi tiết đơn hàng</Text>
-        <TouchableOpacity onPress={() => Linking.openURL('tel:0900332211')}>
+        <TouchableOpacity onPress={() => Linking.openURL("tel:0900332211")}>
           <Image
             style={styles.imgCall}
             source={require("../../image/call_50px.png")}
@@ -112,7 +132,7 @@ const DetailProduct: React.FC<{ navigation: any }> = (props) => {
       {/* body */}
       <FlatList
         style={{ height: "70%" }}
-        data={groupItemsByUser(data)}
+        data={groupItemsByUser(listPickPet)}
         renderItem={renderGroup}
         keyExtractor={(item) => item.idUser}
         showsVerticalScrollIndicator={false}
@@ -197,37 +217,28 @@ const styles = StyleSheet.create({
     marginLeft: 10,
     marginTop: 10,
   },
-  frameInfo: {
-    width: "70%",
-    paddingLeft: 15,
-  },
-  txtNameProduct: {
-    fontSize: 16,
-    fontWeight: "700",
-    color: "#000000",
-  },
-  txtShowMore: {
-    fontSize: 14,
+  nameProduct: {
     color: "#6D3805",
+    fontSize: 18,
+    fontWeight: "700",
+    paddingLeft: 20,
   },
-  txtUser: {
+  nameGram: {
+    color: "#6D3805",
     fontSize: 14,
-    color: "#000000",
+    paddingLeft: 20,
   },
-  framePrice: {
-    flexDirection: "row",
-    alignItems: "center",
-    paddingTop: 20,
-    justifyContent: "space-between",
+  txtAlike: {
+    color: "#6D3805",
+    fontSize: 14,
+    paddingLeft: 20,
+    textAlign: "left",
   },
   txtPrice: {
+    color: "#B2030C",
     fontSize: 16,
-    fontWeight: "700",
-    color: "#000000",
-  },
-  txtQuantity: {
-    fontSize: 14,
-    color: "#000000",
-    marginLeft: 10,
+    fontWeight: "400",
+    paddingTop: 5,
+    textAlign: "right",
   },
 });

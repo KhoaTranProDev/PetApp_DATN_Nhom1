@@ -21,7 +21,7 @@ import { GetRouteCat } from './components/routeCat';
 import DetailProduct from './components/HomePay/products/DetailProduct';
 import MainPaymentType from './components/HomePay/paymentType';
 import AddDress from './components/HomePay/addDress';
-import DetailAddress from './components/HomePay/addDress/detailAddress';
+import UpdateAddress from './components/HomePay/addDress/updateAddress';
 import AddAddress from './components/HomePay/addDress/addAddress';
 import Cart from './(tabs)/cart'
 import DetailCatList from './components/DetailCatList';
@@ -85,7 +85,7 @@ function CatStack (){
       <Stack.Screen name='DetailProduct' component={DetailProduct}/>
       <Stack.Screen name='MainPaymentType' component={MainPaymentType}/>
       <Stack.Screen name='AddDress' component={AddDress}/>
-      <Stack.Screen name='DetailAddress' component={DetailAddress}/>
+      <Stack.Screen name='UpdateAddress' component={UpdateAddress}/>
       <Stack.Screen name='AddAddress' component={AddAddress}/>
     </Stack.Navigator>
   )

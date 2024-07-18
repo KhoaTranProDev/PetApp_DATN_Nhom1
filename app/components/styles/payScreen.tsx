@@ -83,7 +83,7 @@ export const styles = StyleSheet.create({
   txtPrice: {
     fontSize: 16,
     fontWeight: "700",
-    color: "#000000",
+    color: "#B2030C",
   },
   txtQuantity: {
     fontSize: 14,
