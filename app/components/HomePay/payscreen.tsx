@@ -6,6 +6,8 @@ import { styles } from "../styles/payScreen";
 
 // data
 import { DataAddress, DataCart } from "../Data";
+import { getListPayIdUser } from "../services/address";
+import { addPay } from "../services/pay";
 
 interface Props {
   route: any;
@@ -15,6 +17,7 @@ interface Props {
 const PayScreen: React.FC<Props> = ({ route, navigation }) => {
   const { selectedOption = "cash", totalPriceTxt, listPickPet, user } = route?.params ?? {};
   const [paymentOption, setPaymentOption] = useState<string | null>(selectedOption);
+  const [addAddress, setAddAddress] = useState<any>([]);
   const ship = 15000;
   
   // console.log("selectedOption in PayScreen", selectedOption);
@@ -47,6 +50,24 @@ const PayScreen: React.FC<Props> = ({ route, navigation }) => {
   const formatNumberTT = (num: number) => {
     return num.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1.");
   }
+  
+  const onGetListPayIdUser = async () => {
+    const res = await getListPayIdUser(user._id);
+    res.sort((a: any, b: any) => (a.defaultA === b.defaultA ? 0 : a.defaultA ? -1 : 1));
+    setAddAddress(res);
+  };
+
+  useEffect(() => {
+    onGetListPayIdUser();
+  }, []);
+
+  useEffect(() => {
+    const unsubscribe = navigation.addListener('focus', () => {
+      onGetListPayIdUser();
+    });
+  
+    return unsubscribe;
+  }, [navigation]);
 
   return (
     <View style={styles.ContainerMain}>
@@ -147,11 +168,20 @@ const PayScreen: React.FC<Props> = ({ route, navigation }) => {
             </TouchableOpacity>
           </View>
           <View style={styles.frameDetailAdress}>
-            <Text style={styles.txtDetailAdress}>
-              {DataAddress[0].address
-                ? DataAddress[0].address
-                : "Vui lòng thêm địa chỉ nhận hàng"}
-            </Text>
+            {
+              addAddress[0]?.address[0]?.name && addAddress[0]?.address[1]?.name && addAddress[0]?.address[2]?.name ?
+              (
+                <Text style={styles.txtDetailAdress}>
+                  {addAddress[0]?.address[0]?.name},
+                  {addAddress[0]?.address[1]?.name},
+                  {addAddress[0]?.address[2]?.name}
+                </Text>
+              ):(
+                <Text style={styles.txtDetailAdress}>
+                  Vui lòng thêm địa chỉ nhận hàng
+                </Text>
+              )
+            }
           </View>
         </View>
       </View>

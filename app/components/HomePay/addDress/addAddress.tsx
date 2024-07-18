@@ -12,7 +12,7 @@ import {
 import React, { useEffect, useState } from "react";
 import MapView, { Marker } from "react-native-maps";
 import Geocoder from "react-native-geocoding";
-import { addAddress, getListPayIdUser } from "../../services/pay";
+import { addAddress, getListPayIdUser } from "../../services/address";
 import { validateCartPayAdress } from "../../validation/cart.pay.address.validation";
 // import { REACT_APP_GOOGLE_MAP_API_KEY } from '@env'
 

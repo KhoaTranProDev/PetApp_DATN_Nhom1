@@ -12,7 +12,7 @@ import {
 import React, { useEffect, useState } from "react";
 
 // data
-import { deleteAddress, getListPayIdUser } from "../../services/pay";
+import { deleteAddress, getListPayIdUser } from "../../services/address";
 import { GestureHandlerRootView, Swipeable } from "react-native-gesture-handler";
 
 interface Props {

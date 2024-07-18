@@ -15,7 +15,7 @@ import {
   getListPayIdUser,
   updateAddress,
   updateAddressDefaultA,
-} from "../../services/pay";
+} from "../../services/address";
 
 interface Coordinates {
   latitude: number;
@@ -44,7 +44,7 @@ const UpdateAddress: React.FC<Props> = ({ navigation, route }) => {
   const handleMapPress = (event: any) => {
     const { latitude, longitude } = event.nativeEvent.coordinate;
     setSelectedLocation({ latitude, longitude });
-    console.log("Selected location:", { latitude, longitude });
+    // console.log("Selected location:", { latitude, longitude });
   };
 
   const changleSwitch = async () => {
