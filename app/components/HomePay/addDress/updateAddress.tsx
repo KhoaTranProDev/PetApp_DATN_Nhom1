@@ -41,13 +41,6 @@ const UpdateAddress: React.FC<Props> = ({ navigation, route }) => {
   const [city, setCity] = useState(item?.address[2]?.name);
   const [typeAddress, setTypeAddress] = useState(item.typeAddress);
 
-  console.log("name", name);
-  console.log("phone", phone);
-  console.log("address", address);
-  console.log("district", district);
-  console.log("city", city);
-  console.log("typeAddress", typeAddress);
-
   const handleMapPress = (event: any) => {
     const { latitude, longitude } = event.nativeEvent.coordinate;
     setSelectedLocation({ latitude, longitude });
