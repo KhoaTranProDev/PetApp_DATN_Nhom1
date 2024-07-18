@@ -32,3 +32,16 @@ export const deleteIdCart = async (id: any) => {
         console.log("Lỗi services deleteIdCart: ", error);
     }
 }
+
+// delete many items by idCart
+// /cart/delete-many
+export const deleteManyCart = async (idCart: any) => {
+    try {
+        const res = await AxiosHelper.delete("/cart/delete-many", {
+            data: { idCart }
+        });
+        return res.data;
+    } catch (error) {
+        console.log("Lỗi services deleteManyCart: ", error);
+    }
+}

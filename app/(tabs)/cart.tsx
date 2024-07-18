@@ -24,7 +24,11 @@ import { styles } from "./styles/cartScreen";
 import Swipeable from "react-native-gesture-handler/Swipeable";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import CheckBox from "expo-checkbox";
-import { deleteIdCart, getCartAll, getCartIdUser } from "../components/services/cart";
+import {
+  deleteIdCart,
+  getCartAll,
+  getCartIdUser,
+} from "../components/services/cart";
 import SendNewPostModal from "./modals/cart.newposts";
 import { launchImageLibrary } from "react-native-image-picker";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -67,6 +71,19 @@ const CartScreens: React.FC<{ navigation: any }> = (props) => {
   const [listPickPet, setListPickPet] = useState<any>([]);
   const [refreshing, setRefreshing] = useState(false);
 
+  const checkSoldItems = () => {
+    for (let item of cartData) {
+      if (item.idPet.status === "sold") {
+        ToastAndroid.show(
+          `Sản phẩm có tên "${item.idPet.name}" đã bán vui lòng xóa`,
+          ToastAndroid.SHORT
+        );
+        return true;
+      }
+    }
+    return false;
+  };
+
   const handleDelete = (id: string, name: string) => {
     Alert.alert(
       `Sản phẩm ${name}`,
@@ -86,7 +103,7 @@ const CartScreens: React.FC<{ navigation: any }> = (props) => {
             } catch (error) {
               console.log("Lỗi handleDelete ở cart (tabs): ", error);
             }
-          }
+          },
         },
       ]
     );
@@ -181,8 +198,11 @@ const CartScreens: React.FC<{ navigation: any }> = (props) => {
   };
 
   const handleNotifiTT = () => {
-    ToastAndroid.show("Vui lòng chọn một em pet để thanh toán nhé ! ^^", ToastAndroid.SHORT);
-  }
+    ToastAndroid.show(
+      "Vui lòng chọn một em pet để thanh toán nhé ! ^^",
+      ToastAndroid.SHORT
+    );
+  };
 
   const renderProduct = (product: any) => (
     <Swipeable
@@ -244,18 +264,18 @@ const CartScreens: React.FC<{ navigation: any }> = (props) => {
   const renderGroup = ({ item }: { item: any }) => {
     return (
       <View key={item?.items[0]?.idPet?.idUser?._id}>
-          <View style={styles.frameCheckBoxAll}>
-            <Text style={styles.userHeader}>
-              {item?.items[0].idPet?.idUser?.name}
-            </Text>
-            <CheckBox
-              value={checkedItems[item.items[0].idPet?.idUser?._id] || false}
-              onValueChange={() =>
-                toggleGroupCheckbox(item.items[0].idPet?.idUser?._id)
-              }
-              style={styles.checkBoxAll}
-            />
-          </View>
+        <View style={styles.frameCheckBoxAll}>
+          <Text style={styles.userHeader}>
+            {item?.items[0].idPet?.idUser?.name}
+          </Text>
+          <CheckBox
+            value={checkedItems[item.items[0].idPet?.idUser?._id] || false}
+            onValueChange={() =>
+              toggleGroupCheckbox(item.items[0].idPet?.idUser?._id)
+            }
+            style={styles.checkBoxAll}
+          />
+        </View>
         {item.items.map((product: any) => renderProduct(product))}
       </View>
     );
@@ -268,7 +288,10 @@ const CartScreens: React.FC<{ navigation: any }> = (props) => {
       const resIdUser = await getDetailUser(userId);
       setUser(resIdUser?.user);
       const resCart = await getCartIdUser(resIdUser?.user?._id);
-      setCartData(resCart);
+      const approvedCart = resCart.filter(
+        (item: any) => item.idPet.status === "approved"
+      );
+      setCartData(approvedCart);
       setIsLoading(false);
     } catch (error) {
       console.log("Lỗi onGetUserId ở cart (tabs): ", error);
@@ -280,12 +303,16 @@ const CartScreens: React.FC<{ navigation: any }> = (props) => {
     await onGetUserId();
     setRefreshing(false);
   };
-  
-  // console.log("cartData: ", cartData.map((item: any) => item?.idPet.idUser));
 
   useEffect(() => {
-    onGetUserId();
-  }, []);
+    const unsubscribe = navigation.addListener("focus", () => {
+      onGetUserId();
+      setTotalPrice(calculateTotalPrice(cartData));
+      setTotalPriceTxt(0);
+    });
+
+    return unsubscribe;
+  }, [navigation, cartData]);
 
   useEffect(() => {
     setTotalPrice(calculateTotalPrice(cartData));
@@ -337,7 +364,7 @@ const CartScreens: React.FC<{ navigation: any }> = (props) => {
               removeClippedSubviews={true}
               onEndReachedThreshold={0.5}
               refreshing={refreshing}
-              onRefresh={onRefresh} 
+              onRefresh={onRefresh}
             />
 
             {/* footer */}
@@ -362,13 +389,15 @@ const CartScreens: React.FC<{ navigation: any }> = (props) => {
                 {listPickPet.length > 0 ? (
                   <TouchableOpacity
                     style={styles.btnCheckout}
-                    onPress={() =>
-                      navigation.navigate("PayScreen", {
-                        totalPriceTxt,
-                        listPickPet,
-                        user
-                      })
-                    }
+                    onPress={() => {
+                      if (!checkSoldItems()) {
+                        navigation.navigate("PayScreen", {
+                          totalPriceTxt,
+                          listPickPet,
+                          user,
+                        });
+                      }
+                    }}
                   >
                     <Text
                       style={{ fontSize: 18, fontWeight: "700", color: "#fff" }}

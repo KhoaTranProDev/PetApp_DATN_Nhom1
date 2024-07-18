@@ -1,4 +1,4 @@
-import { View, Text, TouchableOpacity, Image, Linking } from "react-native";
+import { View, Text, TouchableOpacity, Image, Linking, ToastAndroid, Alert } from "react-native";
 import React, { useEffect, useState } from "react";
 
 // css
@@ -8,6 +8,7 @@ import { styles } from "../styles/payScreen";
 import { DataAddress, DataCart } from "../Data";
 import { getListPayIdUser } from "../services/address";
 import { addPay } from "../services/pay";
+import { deleteIdCart, deleteManyCart } from "../services/cart";
 
 interface Props {
   route: any;
@@ -19,6 +20,9 @@ const PayScreen: React.FC<Props> = ({ route, navigation }) => {
   const [paymentOption, setPaymentOption] = useState<string | null>(selectedOption);
   const [addAddress, setAddAddress] = useState<any>([]);
   const ship = 15000;
+  const total = totalPriceTxt + ship;
+  const listPayPet = listPickPet.map((item: any) => item.idPet._id)
+  const idCart = listPickPet.map((item: any) => item._id);
   
   // console.log("selectedOption in PayScreen", selectedOption);
 
@@ -51,6 +55,34 @@ const PayScreen: React.FC<Props> = ({ route, navigation }) => {
     return num.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1.");
   }
   
+  const handlePay = () => {
+    Alert.alert(
+      `Cảnh báo !!!`,
+      "Bạn xác nhận muốn thanh toán đơn hàng này không ?",
+      [
+        {
+          text: "Hủy",
+          style: "cancel",
+        },
+        {
+          text: "Chấp nhận",
+          onPress: async () => {
+            const data = {
+              total,
+              idUser: user._id,
+              moneyType: paymentOption,
+              petId: listPayPet,
+            }
+            await addPay(data);
+            await deleteManyCart(idCart);
+            ToastAndroid.show("Thanh toán thành công", ToastAndroid.SHORT)
+            navigation.replace("Home");
+          }
+        },
+      ]
+    );
+  };
+
   const onGetListPayIdUser = async () => {
     const res = await getListPayIdUser(user._id);
     res.sort((a: any, b: any) => (a.defaultA === b.defaultA ? 0 : a.defaultA ? -1 : 1));
@@ -155,7 +187,7 @@ const PayScreen: React.FC<Props> = ({ route, navigation }) => {
             </View>
             <View style={styles.frameTotal}>
               <Text style={styles.txtDetail}>Tổng cộng</Text>
-              <Text style={styles.txtDetail}>{formatNumberTT(totalPriceTxt + ship)} Đ</Text>
+              <Text style={styles.txtDetail}>{formatNumberTT(total)} Đ</Text>
             </View>
           </View>
         </View>
@@ -188,7 +220,7 @@ const PayScreen: React.FC<Props> = ({ route, navigation }) => {
       {/* footer */}
       <View style={styles.footer}>
         <View style={{ flexDirection: "row", justifyContent: "center" }}>
-          <TouchableOpacity style={styles.btnCheckout}>
+          <TouchableOpacity style={styles.btnCheckout} onPress={handlePay}>
             <Text style={{ fontSize: 18, fontWeight: "700", color: "#fff" }}>
               Thanh toán
             </Text>

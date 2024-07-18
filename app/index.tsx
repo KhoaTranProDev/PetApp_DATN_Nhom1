@@ -47,7 +47,7 @@ function HomeScreen (){
         tabBarIcon: ({color}) => (
           <Feather name='shopping-cart' size={28} color={color}/>
         ),
-        tabBarStyle: { display: 'none' },
+        tabBarStyle: { display: GetRouteCat(route) },
         headerShown: false,
       })}/>
       <Tab.Screen name='ProfileScreen' component={ProfileScreen}
@@ -87,6 +87,7 @@ function CatStack (){
       <Stack.Screen name='AddDress' component={AddDress}/>
       <Stack.Screen name='UpdateAddress' component={UpdateAddress}/>
       <Stack.Screen name='AddAddress' component={AddAddress}/>
+      <Stack.Screen name='Home' component={Home}/>
     </Stack.Navigator>
   )
 }
