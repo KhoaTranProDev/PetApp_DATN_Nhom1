@@ -125,7 +125,7 @@ const MainPaymentType: React.FC<Props> = ({ route, navigation }) => {
                   )}
                 </View>
                 <Image style={styles.imgPayment} source={require("../../image/ic_wallet.png")} />
-                <Text style={styles.txtPayment}>Thanh toán bằng ví điện tử</Text>
+                <Text style={styles.txtPayment}>Thanh toán bằng ví điện tử (VN Pay)</Text>
             </TouchableOpacity>
         </View>
       </View>

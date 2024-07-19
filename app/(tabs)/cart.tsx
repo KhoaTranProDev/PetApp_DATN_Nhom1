@@ -309,6 +309,9 @@ const CartScreens: React.FC<{ navigation: any }> = (props) => {
       onGetUserId();
       setTotalPrice(calculateTotalPrice(cartData));
       setTotalPriceTxt(0);
+      setCheckedItems({});
+      setListPickPet([]);
+      setRefreshing(false);
     });
 
     return unsubscribe;
