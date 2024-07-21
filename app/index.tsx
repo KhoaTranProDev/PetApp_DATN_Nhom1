@@ -25,6 +25,7 @@ import UpdateAddress from './components/HomePay/addDress/updateAddress';
 import AddAddress from './components/HomePay/addDress/addAddress';
 import Cart from './(tabs)/cart'
 import DetailCatList from './components/DetailCatList';
+import WebView from 'react-native-webview';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -117,15 +118,6 @@ const Page = () => {
         <Stack.Screen name='HomeScreen' component={HomeScreen}/>
       </Stack.Navigator>
     </NavigationContainer>
-      // <Stack.Navigator screenOptions={{headerShown: false}}>
-      //   <Stack.Screen name='CartScreen' component={CartScreen}/>
-      //   <Stack.Screen name='PayScreen' component={PayScreen}/>
-      //   <Stack.Screen name='DetailProduct' component={DetailProduct}/>
-      //   <Stack.Screen name='MainPaymentType' component={MainPaymentType}/>
-      //   <Stack.Screen name='AddDress' component={AddDress}/>
-      //   <Stack.Screen name='DetailAddress' component={DetailAddress}/>
-      //   <Stack.Screen name='AddAddress' component={AddAddress}/>
-      // </Stack.Navigator>
   )
 }
 

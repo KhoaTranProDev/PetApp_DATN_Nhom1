@@ -15,9 +15,12 @@ import { launchImageLibrary } from "react-native-image-picker";
 import axios from "axios";
 import * as ImagePicker from "expo-image-picker";
 import { validatePostData } from "../validation/cart.validation";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { getDetailUser } from "../services/cart";
 
 interface SendNewPostModalProps {
   cloneModal: any;
+  user: any;
 }
 
 const SendNewPostModal: React.FC<SendNewPostModalProps> = (props) => {
@@ -40,6 +43,7 @@ const SendNewPostModal: React.FC<SendNewPostModalProps> = (props) => {
       weight: inputValueWeight,
       describe: inputValueDescribe,
       image: uploadedImages,
+      idUser: props.user?._id,
     };
 
     if (!validatePostData(postData)) {
@@ -110,7 +114,6 @@ const SendNewPostModal: React.FC<SendNewPostModalProps> = (props) => {
       setLoading(false);
     }
   };
-  
 
   return (
     <View style={styles.modalViewNewPost}>

@@ -1,4 +1,12 @@
-import { View, Text, TouchableOpacity, Image, Linking, ToastAndroid, Alert } from "react-native";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  Image,
+  Linking,
+  ToastAndroid,
+  Alert,
+} from "react-native";
 import React, { useEffect, useState } from "react";
 
 // css
@@ -9,6 +17,7 @@ import { DataAddress, DataCart } from "../Data";
 import { getListPayIdUser } from "../services/address";
 import { addPay } from "../services/pay";
 import { deleteIdCart, deleteManyCart } from "../services/cart";
+import WebView from "react-native-webview";
 
 interface Props {
   route: any;
@@ -16,15 +25,24 @@ interface Props {
 }
 
 const PayScreen: React.FC<Props> = ({ route, navigation }) => {
-  const { selectedOption = "cash", totalPriceTxt, listPickPet, user } = route?.params ?? {};
-  const [paymentOption, setPaymentOption] = useState<string | null>(selectedOption);
+  const {
+    selectedOption = "cash",
+    totalPriceTxt,
+    listPickPet,
+    user,
+  } = route?.params ?? {};
+  const [paymentOption, setPaymentOption] = useState<string | null>(
+    selectedOption
+  );
   const [addAddress, setAddAddress] = useState<any>([]);
+  const [showWebView, setShowWebView] = useState(false);
+  const [webViewUrl, setWebViewUrl] = useState<string | null>(null);
   const ship = 15000;
   const total = totalPriceTxt + ship;
-  const listPayPet = listPickPet.map((item: any) => item.idPet._id)
+  const listPayPet = listPickPet.map((item: any) => item.idPet._id);
   const idCart = listPickPet.map((item: any) => item._id);
-  
-  // console.log("selectedOption in PayScreen", selectedOption);
+
+  console.log("selectedOption in PayScreen", paymentOption);
 
   useEffect(() => {
     if (route?.params?.selectedOption) {
@@ -45,7 +63,7 @@ const PayScreen: React.FC<Props> = ({ route, navigation }) => {
       case "credit":
         return "Thanh toán bằng thẻ tín dụng";
       case "wallet":
-        return "Thanh toán bằng ví điện tử";
+        return "Thanh toán bằng VN Pay";
       default:
         return option;
     }
@@ -53,8 +71,8 @@ const PayScreen: React.FC<Props> = ({ route, navigation }) => {
 
   const formatNumberTT = (num: number) => {
     return num.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1.");
-  }
-  
+  };
+
   const handlePay = () => {
     Alert.alert(
       `Cảnh báo !!!`,
@@ -67,25 +85,54 @@ const PayScreen: React.FC<Props> = ({ route, navigation }) => {
         {
           text: "Chấp nhận",
           onPress: async () => {
-            const data = {
-              total,
-              idUser: user._id,
-              moneyType: paymentOption,
-              petId: listPayPet,
+            if (paymentOption === "wallet") {
+              setShowWebView(true);
+              setWebViewUrl(
+                "https://sandbox.vnpayment.vn/tryitnow/Home/CreateOrder"
+              );
+            } else {
+              const data = {
+                total,
+                idUser: user._id,
+                moneyType: paymentOption,
+                petId: listPayPet,
+              };
+              await addPay(data);
+              await deleteManyCart(idCart);
+              ToastAndroid.show("Thanh toán thành công", ToastAndroid.SHORT);
+              navigation.replace("Home");
             }
-            await addPay(data);
-            await deleteManyCart(idCart);
-            ToastAndroid.show("Thanh toán thành công", ToastAndroid.SHORT)
-            navigation.replace("Home");
-          }
+          },
         },
       ]
     );
   };
 
+  const handleCloseWebView = async () => {
+    setShowWebView(false);
+    setWebViewUrl(null);
+    const data = {
+      total,
+      idUser: user._id,
+      moneyType: paymentOption,
+      petId: listPayPet,
+    };
+    await addPay(data);
+    await deleteManyCart(idCart);
+    ToastAndroid.show("Thanh toán thành công", ToastAndroid.SHORT);
+    navigation.replace("Home");
+  };
+
+  const handleCloseWebViewHuy = async () => {
+    setShowWebView(false);
+    setWebViewUrl(null);
+  };
+
   const onGetListPayIdUser = async () => {
     const res = await getListPayIdUser(user._id);
-    res.sort((a: any, b: any) => (a.defaultA === b.defaultA ? 0 : a.defaultA ? -1 : 1));
+    res.sort((a: any, b: any) =>
+      a.defaultA === b.defaultA ? 0 : a.defaultA ? -1 : 1
+    );
     setAddAddress(res);
   };
 
@@ -94,10 +141,10 @@ const PayScreen: React.FC<Props> = ({ route, navigation }) => {
   }, []);
 
   useEffect(() => {
-    const unsubscribe = navigation.addListener('focus', () => {
+    const unsubscribe = navigation.addListener("focus", () => {
       onGetListPayIdUser();
     });
-  
+
     return unsubscribe;
   }, [navigation]);
 
@@ -124,26 +171,39 @@ const PayScreen: React.FC<Props> = ({ route, navigation }) => {
         {/* Frame Product */}
         <View style={styles.frameProduct}>
           <View style={styles.frameImg}>
-            <Image style={styles.imgProduct} source={{uri: listPickPet[0]?.idPet?.image[0]}} />
+            <Image
+              style={styles.imgProduct}
+              source={{ uri: listPickPet[0]?.idPet?.image[0] }}
+            />
           </View>
           <View style={styles.frameInfo}>
             <View style={styles.showProduct}>
-              <Text style={styles.txtNameProduct}>{listPickPet[0]?.idPet?.name}</Text>
+              <Text style={styles.txtNameProduct}>
+                {listPickPet[0]?.idPet?.name}
+              </Text>
               <TouchableOpacity
-                onPress={() => navigation.navigate("DetailProduct", {listPickPet, user})}
+                onPress={() =>
+                  navigation.navigate("DetailProduct", { listPickPet, user })
+                }
               >
                 <Text style={styles.txtShowMore}>
                   Xem thêm ({listPickPet?.length})
                 </Text>
               </TouchableOpacity>
             </View>
-            <Text style={styles.txtUser}>{listPickPet[0]?.idPet?.idUser?.name}</Text>
+            <Text style={styles.txtUser}>
+              {listPickPet[0]?.idPet?.idUser?.name}
+            </Text>
             <View style={styles.framePrice}>
-              <Text style={styles.txtPrice}>{formatNumberTT(totalPriceTxt)} Đ</Text>
+              <Text style={styles.txtPrice}>
+                {formatNumberTT(totalPriceTxt)} Đ
+              </Text>
               <TouchableOpacity
-                onPress={() => navigation.navigate("DetailProduct", {listPickPet, user})}
+                onPress={() =>
+                  navigation.navigate("DetailProduct", { listPickPet, user })
+                }
               >
-              <Text style={styles.txtQuantity}>x{listPickPet?.length}</Text>
+                <Text style={styles.txtQuantity}>x{listPickPet?.length}</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -163,7 +223,9 @@ const PayScreen: React.FC<Props> = ({ route, navigation }) => {
             }
           >
             <Text style={styles.txtAddPayOffers}>
-              {paymentOption ? paymentOptionConvert(paymentOption) : "Thêm hình thức thanh toán"}
+              {paymentOption
+                ? paymentOptionConvert(paymentOption)
+                : "Thêm hình thức thanh toán"}
             </Text>
           </TouchableOpacity>
         </View>
@@ -175,7 +237,9 @@ const PayScreen: React.FC<Props> = ({ route, navigation }) => {
           <View style={styles.frameDetailProduct}>
             <View style={styles.frameDetail}>
               <Text style={styles.txtDetail}>Tạm tính</Text>
-              <Text style={styles.txtDetail}>{formatNumberTT(totalPriceTxt)} Đ</Text>
+              <Text style={styles.txtDetail}>
+                {formatNumberTT(totalPriceTxt)} Đ
+              </Text>
             </View>
             <View style={styles.frameDetail}>
               <Text style={styles.txtDetail}>Phí giao hàng</Text>
@@ -195,25 +259,28 @@ const PayScreen: React.FC<Props> = ({ route, navigation }) => {
         <View style={styles.frameAdress}>
           <View style={styles.frameTxtAdress}>
             <Text style={styles.txtAdress}>Địa chỉ nhận hàng</Text>
-            <TouchableOpacity onPress={() => navigation.navigate("AddDress", {listPickPet, user})}>
+            <TouchableOpacity
+              onPress={() =>
+                navigation.navigate("AddDress", { listPickPet, user })
+              }
+            >
               <Text style={styles.txtAdressUpdate}>Thay đổi</Text>
             </TouchableOpacity>
           </View>
           <View style={styles.frameDetailAdress}>
-            {
-              addAddress[0]?.address[0]?.name && addAddress[0]?.address[1]?.name && addAddress[0]?.address[2]?.name ?
-              (
-                <Text style={styles.txtDetailAdress}>
-                  {addAddress[0]?.address[0]?.name},
-                  {addAddress[0]?.address[1]?.name},
-                  {addAddress[0]?.address[2]?.name}
-                </Text>
-              ):(
-                <Text style={styles.txtDetailAdress}>
-                  Vui lòng thêm địa chỉ nhận hàng
-                </Text>
-              )
-            }
+            {addAddress[0]?.address[0]?.name &&
+            addAddress[0]?.address[1]?.name &&
+            addAddress[0]?.address[2]?.name ? (
+              <Text style={styles.txtDetailAdress}>
+                {addAddress[0]?.address[0]?.name},
+                {addAddress[0]?.address[1]?.name},
+                {addAddress[0]?.address[2]?.name}
+              </Text>
+            ) : (
+              <Text style={styles.txtDetailAdress}>
+                Vui lòng thêm địa chỉ nhận hàng
+              </Text>
+            )}
           </View>
         </View>
       </View>
@@ -227,6 +294,23 @@ const PayScreen: React.FC<Props> = ({ route, navigation }) => {
           </TouchableOpacity>
         </View>
       </View>
+      {showWebView && webViewUrl && (
+        <View style={styles.viewCloseWebView}>
+          <View style={styles.btnBack}>
+            <TouchableOpacity onPress={handleCloseWebViewHuy}>
+              <Text style={styles.txtText}>
+                HỦY
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={handleCloseWebView}>
+              <Text style={styles.txtText}>
+                LƯU
+              </Text>
+            </TouchableOpacity>
+          </View>
+          <WebView source={{ uri: webViewUrl }} style={{ flex: 1 }} />
+        </View>
+      )}
     </View>
   );
 };

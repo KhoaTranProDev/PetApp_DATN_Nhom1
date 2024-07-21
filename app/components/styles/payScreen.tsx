@@ -189,7 +189,7 @@ export const styles = StyleSheet.create({
     color: "#000000",
   },
   // Footer
-  footer:{},
+  footer: {},
   btnCheckout: {
     backgroundColor: "#FF5E00",
     width: 343,
@@ -198,5 +198,26 @@ export const styles = StyleSheet.create({
     borderRadius: 30,
     justifyContent: "center",
     alignItems: "center",
+  },
+  viewCloseWebView: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+  },
+  btnBack: {
+    height: 50,
+    backgroundColor: "#0088AE",
+    justifyContent: "space-between",
+    flexDirection: "row",
+    alignItems: "center",
+    paddingHorizontal: 10,
+    marginTop: 40,
+  },
+  txtText: { 
+    fontSize: 16, 
+    color: "#fff", 
+    fontWeight: "bold",
   },
 });

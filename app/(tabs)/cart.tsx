@@ -30,7 +30,6 @@ import {
   getCartIdUser,
 } from "../components/services/cart";
 import SendNewPostModal from "./modals/cart.newposts";
-import { launchImageLibrary } from "react-native-image-picker";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { getDetailUser } from "./services/cart";
 
@@ -263,21 +262,27 @@ const CartScreens: React.FC<{ navigation: any }> = (props) => {
 
   const renderGroup = ({ item }: { item: any }) => {
     return (
-      <View key={item?.items[0]?.idPet?.idUser?._id}>
-        <View style={styles.frameCheckBoxAll}>
-          <Text style={styles.userHeader}>
-            {item?.items[0].idPet?.idUser?.name}
-          </Text>
-          <CheckBox
-            value={checkedItems[item.items[0].idPet?.idUser?._id] || false}
-            onValueChange={() =>
-              toggleGroupCheckbox(item.items[0].idPet?.idUser?._id)
-            }
-            style={styles.checkBoxAll}
-          />
-        </View>
-        {item.items.map((product: any) => renderProduct(product))}
-      </View>
+      <>
+        {
+          item.items[0]?.idPet?.idUser?._id !== user?._id && (
+            <View key={item?.items[0]?.idPet?.idUser?._id}>
+              <View style={styles.frameCheckBoxAll}>
+                <Text style={styles.userHeader}>
+                  {item?.items[0].idPet?.idUser?.name}
+                </Text>
+                <CheckBox
+                  value={checkedItems[item.items[0].idPet?.idUser?._id] || false}
+                  onValueChange={() =>
+                    toggleGroupCheckbox(item.items[0].idPet?.idUser?._id)
+                  }
+                  style={styles.checkBoxAll}
+                />
+              </View>
+              {item.items.map((product: any) => renderProduct(product))}
+            </View>
+          )
+        }
+      </>
     );
   };
 
@@ -434,6 +439,7 @@ const CartScreens: React.FC<{ navigation: any }> = (props) => {
           >
             <SendNewPostModal
               cloneModal={() => setModalVisibleNewPost(false)}
+              user={user}
             />
           </Modal>
         </>
