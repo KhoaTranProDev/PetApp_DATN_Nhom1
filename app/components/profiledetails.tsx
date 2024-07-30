@@ -4,6 +4,7 @@ import { Stack, useNavigation } from 'expo-router'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { Ionicons } from '@expo/vector-icons'
 import AsyncStorage from '@react-native-async-storage/async-storage'
+import AxiosHelper from '../util/AxiosHelper'
 
 const ProfileDetails = () => {
   const navigation = useNavigation();
@@ -12,20 +13,27 @@ const ProfileDetails = () => {
   const [emailUser, setEmailUser] = useState('');
   const [avatarUser, setAvatarUser] = useState('');
   const [dateOfBirth, setDateOfBirth] = useState('');
+  const [userData, setUserData] = useState({});
   const [phone, setPhone] = useState('');
 
   useEffect(() => {
     const fetchUser = async () => {
-      const storedUsername = await AsyncStorage.getItem('username');
-      const storedEmailUser = await AsyncStorage.getItem('email');
-      const storedAvatarUser = await AsyncStorage.getItem('avatar');
-      const storedDOB = await AsyncStorage.getItem('dob');
-      const storedPhone = await AsyncStorage.getItem('sdt');
-      setPhone(String(storedPhone));
-      setDateOfBirth(String(storedDOB));
-      setAvatarUser(String(storedAvatarUser));
-      setUsername(String(storedUsername));
-      setEmailUser(String(storedEmailUser));
+      try {
+        const idUser = await AsyncStorage.getItem("userId");
+        if (idUser) {
+            const response = await AxiosHelper.get(`/users/get-user/${idUser}`);
+            setUserData(response.data.user);
+            setUsername(response.data.user.name);
+            setEmailUser(response.data.user.email);
+            setAvatarUser(response.data.user.avatar);
+            setDateOfBirth(response.data.user.birthDayOf);
+            setPhone(response.data.user.sdt);
+        } else {
+          console.log("No user found");
+        }
+      } catch (error) {
+        console.error("Error", error);
+      }
     };
     fetchUser();
   }, []);

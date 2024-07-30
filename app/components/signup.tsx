@@ -4,6 +4,7 @@ import { Link, Stack } from 'expo-router'
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import AxiosHelper from '../util/AxiosHelper';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const SignUp = () => {
     const navigation = useNavigation();
@@ -17,28 +18,22 @@ const SignUp = () => {
         setshowPassword(!showPassword);
     }
 
-    const handleRegisterAccount = async() => {
-        try {
-            const response = await AxiosHelper.post("/users/add",{
+    async function handleNavigationToDetail () {
+        if(emailUser.length === 0 || userName.length === 0 || password.length === 0){
+            ToastAndroid.show("Vui lòng điền đầy đủ thông tin!", ToastAndroid.SHORT);
+        } else {
+            navigation.navigate("SignUpDetail", {
                 email: emailUser,
                 username: userName,
                 password: password
             });
-            console.log(response);
-            if(response.data.status == 1){
-                ToastAndroid.show("Đăng ký tài khoản thành công!", ToastAndroid.SHORT);
-                navigation.navigate("Login");
-            } else {
-                ToastAndroid.show("Đăng ký tài khoản thất bại!", ToastAndroid.SHORT);
-            }
-        } catch (error) {
-            console.log(error);
         }
     }
 
+
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Sign Up</Text>
+      <Text style={styles.title}>Create Account</Text>
       <View style={styles.box}>
         <View style={styles.headerContent}>
           <Text style={styles.titleContent}>Looks like you don't have an account.</Text>
@@ -73,12 +68,12 @@ const SignUp = () => {
             </View>
         <Text style={styles.textContent}>By selecting Create Account below, i agree to</Text>
         <Text style={styles.textBoldContent}>Terms of Service & Privacy Policy</Text>
-        <TouchableOpacity style={styles.CreateButton} onPress={handleRegisterAccount}>
+        <TouchableOpacity style={styles.CreateButton} onPress={handleNavigationToDetail}>
                 <Text style={{
                     fontSize: 18,
                     fontWeight: '600',
                     color: '#000'
-                }}>Create Account</Text>
+                }}>Continue</Text>
             </TouchableOpacity>
         <View style={styles.bottomItem}>
             <Text style={{

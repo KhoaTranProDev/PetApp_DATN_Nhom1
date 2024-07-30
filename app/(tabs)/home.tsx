@@ -40,22 +40,42 @@ const Stack = createStackNavigator();
 const Home = () => {
   const [pets, setPets] = useState<Pet[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
-  const [usernameUsers, setUsernameUsers] = useState('');
-  const [avatarUser, setAvatarUser] = useState('');
+  const [userData, setUserData] = useState({});
+  const [googleUser, setGoogleUser] = useState({});
+  const [isGoogleLogin, setIsGoogleLogin] = useState(false);
+  const [usernameUsers, setUsernameUsers] = useState("");
+  const [avatarUser, setAvatarUser] = useState("");
 
   const navigation = useNavigation();
   const route = useRoute();
 
   const handleTrendingPress = () => {
-    console.log(pets);
+    console.log(usernameUsers);
   };
 
   useEffect(() => {
     const fetchUser = async () => {
-      const storedUsername = await AsyncStorage.getItem('username');
-      const storedAvatar = await AsyncStorage.getItem('avatar');
-      setAvatarUser(String(storedAvatar));
-      setUsernameUsers(String(storedUsername));
+      try {
+        //Kiem tra dang nhap voi google
+        const googleData = await AsyncStorage.getItem("ggUserData");
+        if (googleData) {
+          setGoogleUser(JSON.parse(googleData));
+          setIsGoogleLogin(true);
+        }
+        //kiem tra dang nhap voi user thong thuong
+        const idUser = await AsyncStorage.getItem("userId");
+        if (idUser) {
+          const response = await AxiosHelper.get(`/users/get-user/${idUser}`);
+          setUserData(response.data.user);
+          setIsGoogleLogin(false);
+          setAvatarUser(response.data.user.avatar);
+          setUsernameUsers(response.data.user.name);
+        } else {
+          console.error("UserId not found in AsyncStorage");
+        }
+      } catch (error) {
+        console.error("Error", error);
+      }
     };
     fetchUser();
   }, []);
@@ -134,14 +154,18 @@ const Home = () => {
     <SafeAreaView style={styles.body}>
       <ScrollView style={styles.scrollView}>
         <View style={styles.headerBaner}>
-          <Text style={styles.text}>Welcome back! {usernameUsers}</Text>
+          <Text style={styles.text}>
+            Welcome back! {isGoogleLogin ? googleUser.user.name : usernameUsers}
+          </Text>
           <TouchableOpacity>
-            <Image
-              source={{
-                uri: avatarUser,
-              }}
-              style={styles.imageBanner}
-            />
+            {isGoogleLogin ? (
+              <Image
+                source={require("./img/defaultpic.jpg")}
+                style={styles.imageBanner}
+              />
+            ) : (
+              <Image source={{ uri: avatarUser }} style={styles.imageBanner} />
+            )}
           </TouchableOpacity>
         </View>
 
@@ -243,6 +267,7 @@ const Home = () => {
 
 const styles = StyleSheet.create({
   body: {
+    flex: 1,
     backgroundColor: "#fff",
     width: "100%",
     height: "100%",
@@ -329,8 +354,9 @@ const styles = StyleSheet.create({
     height: "auto",
   },
   containerBanner: {
+    flex: 0,
     width: "100%",
-    height: "auto",
+    height: 450,
   },
   petsContainer: {
     display: "flex",

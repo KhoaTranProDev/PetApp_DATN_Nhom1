@@ -18,6 +18,7 @@ import DetailsItemList from './components/DetailsItemList';
 import Cart from './(tabs)/cart'
 import DetailCatList from './components/DetailCatList';
 import DetailHamList from './components/DetailHamList';
+import SignUpDetail from './components/SignUpDetail';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -85,6 +86,7 @@ const Page = () => {
       <Stack.Navigator initialRouteName='Login' screenOptions={{headerShown: false}}>
         <Stack.Screen name='Login' component={Login}/>
         <Stack.Screen name='SignUp' component={SignUp}/>
+        <Stack.Screen name='SignUpDetail' component={SignUpDetail}/>
         <Stack.Screen name='ForgotPass' component={ForgotPass}/>
         <Stack.Screen name='VerifyOTP' component={VerifyOTP}/>
         <Stack.Screen name='SetPassword' component={SetPassword}/>

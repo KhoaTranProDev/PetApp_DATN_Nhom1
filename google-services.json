@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "856500635423",
+    "project_id": "datnpetapp",
+    "storage_bucket": "datnpetapp.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:856500635423:android:3461f81ba9742bcc28d22a",
+        "android_client_info": {
+          "package_name": "com.khoatran.Project1"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "856500635423-c0na3qpqe9dg1unuq5udqjbuf6bl1b85.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.khoatran.Project1",
+            "certificate_hash": "f31fe52ccd18b575d138be4565ca8f3805c96637"
+          }
+        },
+        {
+          "client_id": "856500635423-mia6a9i5stse332cc33eaq5kl80n5qig.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.khoatran.Project1",
+            "certificate_hash": "9689b068445afca9b58e78e0492d15514785ff05"
+          }
+        },
+        {
+          "client_id": "856500635423-73b0psrur658lul8no6ra43gjcc98a8g.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDQnRFQTLuTAp7V4lu87XbMZjmGyglBulA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "856500635423-73b0psrur658lul8no6ra43gjcc98a8g.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
