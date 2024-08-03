@@ -15,7 +15,7 @@ import {
 import React, { useCallback, useEffect, useState } from "react";
 
 // data
-import { DataCart } from "./Data";
+import { DataCart } from "./Data/main";
 
 // css
 import { styles } from "./styles/cartScreen";
@@ -34,7 +34,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { getDetailUser } from "./services/cart";
 
 const groupItemsByUser = (data: any) => {
-  const grouped = data.reduce((acc: any, item: any) => {
+  const grouped = data?.reduce((acc: any, item: any) => {
     const userId = item?.idPet?.idUser?._id;
     if (!acc[userId]) {
       acc[userId] = [];
@@ -50,7 +50,7 @@ const groupItemsByUser = (data: any) => {
 
 const calculateTotalPrice = (cartData: any) => {
   let total = 0;
-  cartData.forEach((item: any) => {
+  cartData?.forEach((item: any) => {
     total += item.idPet.price;
   });
   return total;
@@ -114,7 +114,7 @@ const CartScreens: React.FC<{ navigation: any }> = (props) => {
       updatedItems[id] = !prev[id];
 
       if (id === "all") {
-        cartData.forEach((item: any) => {
+        cartData?.forEach((item: any) => {
           updatedItems[item?._id] = updatedItems[id];
         });
       } else {
@@ -124,7 +124,7 @@ const CartScreens: React.FC<{ navigation: any }> = (props) => {
       }
 
       let totalPrice = 0;
-      Object.keys(updatedItems).forEach((itemId) => {
+      Object.keys(updatedItems)?.forEach((itemId) => {
         if (updatedItems[itemId]) {
           const selectedItem = cartData.find(
             (item: any) => item?._id === itemId
@@ -136,7 +136,7 @@ const CartScreens: React.FC<{ navigation: any }> = (props) => {
       setTotalPrice(totalPrice);
       setTotalPriceTxt(totalPrice);
 
-      const listPickPetTemp = cartData.filter(
+      const listPickPetTemp = cartData?.filter(
         (item: any) => updatedItems[item?._id]
       );
       setListPickPet(listPickPetTemp);
@@ -164,7 +164,7 @@ const CartScreens: React.FC<{ navigation: any }> = (props) => {
 
       updatedItems[idUser] = allChecked;
 
-      cartData.forEach((item: any) => {
+      cartData?.forEach((item: any) => {
         if (item.idPet.idUser?._id === idUser) {
           updatedItems[item?._id] = allChecked;
         }
@@ -175,7 +175,7 @@ const CartScreens: React.FC<{ navigation: any }> = (props) => {
       );
 
       let totalPrice = 0;
-      Object.keys(updatedItems).forEach((itemId) => {
+      Object.keys(updatedItems)?.forEach((itemId) => {
         if (updatedItems[itemId]) {
           const selectedItem = cartData.find(
             (item: any) => item?._id === itemId
@@ -187,7 +187,7 @@ const CartScreens: React.FC<{ navigation: any }> = (props) => {
       setTotalPrice(totalPrice);
       setTotalPriceTxt(totalPrice);
 
-      const listPickPetTemp = cartData.filter(
+      const listPickPetTemp = cartData?.filter(
         (item: any) => updatedItems[item?._id]
       );
       setListPickPet(listPickPetTemp);
@@ -268,7 +268,7 @@ const CartScreens: React.FC<{ navigation: any }> = (props) => {
             <View key={item?.items[0]?.idPet?.idUser?._id}>
               <View style={styles.frameCheckBoxAll}>
                 <Text style={styles.userHeader}>
-                  {item?.items[0].idPet?.idUser?.name}
+                  {item?.items[0].idPet?.idUser?.name ?? "Khác"}
                 </Text>
                 <CheckBox
                   value={checkedItems[item.items[0].idPet?.idUser?._id] || false}
@@ -293,7 +293,7 @@ const CartScreens: React.FC<{ navigation: any }> = (props) => {
       const resIdUser = await getDetailUser(userId);
       setUser(resIdUser?.user);
       const resCart = await getCartIdUser(resIdUser?.user?._id);
-      const approvedCart = resCart.filter(
+      const approvedCart = resCart?.filter(
         (item: any) => item.idPet.status === "approved"
       );
       setCartData(approvedCart);

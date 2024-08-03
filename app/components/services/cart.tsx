@@ -22,6 +22,17 @@ export const getCartIdUser = async (idUser: any) => {
     }
 }
 
+// add body
+// /cart/add
+export const addCart = async (body: any) => {
+    try {
+        const res = await AxiosHelper.post("/cart/add", body);
+        return res.data;
+    } catch (error) {
+        console.log("Lỗi services addCart: ", error);
+    }
+}
+
 // delete id
 // /cart/delete/:id
 export const deleteIdCart = async (id: any) => {

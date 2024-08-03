@@ -1,9 +1,9 @@
-import { FlatList, Image, Linking, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { FlatList, Image, Linking, StyleSheet, Text, ToastAndroid, TouchableOpacity, View } from "react-native";
 import React, { useState } from "react";
 
 // css
 import { styles } from "../../styles/mainPaymentType";
-import { PaymentSalesData } from "../../Data";
+import { PaymentSalesData } from "../../Data/main";
 
 interface Props {
   route: any;
@@ -20,6 +20,10 @@ const MainPaymentType: React.FC<Props> = ({ route, navigation }) => {
 
   // console.log("selectedOption", selectedOption);
 
+  const handleNotifi = () => {
+    ToastAndroid.show("Chức năng đang được phát triển", ToastAndroid.SHORT);
+  }
+  
   return (
     <View style={styles.ContainerMain}>
       {/* header */}
@@ -83,39 +87,6 @@ const MainPaymentType: React.FC<Props> = ({ route, navigation }) => {
                 <Image style={styles.imgPayment} source={require("../../image/ic_cash.png")} />
                 <Text style={styles.txtPayment}>Thanh toán tiền mặt</Text>
             </TouchableOpacity>
-            {/* App money */}
-            <TouchableOpacity style={styles.fpI_Payment}
-                onPress={() => handleOptionSelect('app')}>
-                <View style={styles.radioContainer}>
-                  {selectedOption === 'app' && (
-                    <View style={styles.radioSelected} />
-                  )}
-                </View>
-                <Image style={styles.imgPayment} source={require("../../image/ic_app.png")} />
-                <Text style={styles.txtPayment}>Thanh toán qua ứng dụng</Text>
-            </TouchableOpacity>
-            {/* ATM */}
-            <TouchableOpacity style={styles.fpI_Payment}
-                onPress={() => handleOptionSelect('atm')}>
-                <View style={styles.radioContainer}>
-                  {selectedOption === 'atm' && (
-                    <View style={styles.radioSelected} />
-                  )}
-                </View>
-                <Image style={styles.imgPayment} source={require("../../image/ic_atm.png")} />
-                <Text style={styles.txtPayment}>Thanh toán qua thẻ ATM</Text>
-            </TouchableOpacity>
-            {/* Credit card */}
-            <TouchableOpacity style={styles.fpI_Payment}
-                onPress={() => handleOptionSelect('credit')}>
-                <View style={styles.radioContainer}>
-                  {selectedOption === 'credit' && (
-                    <View style={styles.radioSelected} />
-                  )}
-                </View>
-                <Image style={styles.imgPayment} source={require("../../image/ic_credit.png")} />
-                <Text style={styles.txtPayment}>Thanh toán bằng thẻ tín dụng</Text>
-            </TouchableOpacity>
             {/* Electronic Wallet */}
             <TouchableOpacity style={styles.fpI_Payment}
                 onPress={() => handleOptionSelect('wallet')}>
@@ -126,6 +97,39 @@ const MainPaymentType: React.FC<Props> = ({ route, navigation }) => {
                 </View>
                 <Image style={styles.imgPayment} source={require("../../image/ic_wallet.png")} />
                 <Text style={styles.txtPayment}>Thanh toán bằng ví điện tử (VN Pay)</Text>
+            </TouchableOpacity>
+            {/* App money */}
+            <TouchableOpacity style={styles.fpI_Payment}
+                onPress={handleNotifi}>
+                <View style={styles.radioContainer}>
+                  {selectedOption === 'app' && (
+                    <View style={styles.radioSelected} />
+                  )}
+                </View>
+                <Image style={styles.imgPayment} source={require("../../image/ic_app.png")} />
+                <Text style={styles.txtPayment}>Thanh toán qua ứng dụng</Text>
+            </TouchableOpacity>
+            {/* ATM */}
+            <TouchableOpacity style={styles.fpI_Payment}
+                onPress={handleNotifi}>
+                <View style={styles.radioContainer}>
+                  {selectedOption === 'atm' && (
+                    <View style={styles.radioSelected} />
+                  )}
+                </View>
+                <Image style={styles.imgPayment} source={require("../../image/ic_atm.png")} />
+                <Text style={styles.txtPayment}>Thanh toán qua thẻ ATM</Text>
+            </TouchableOpacity>
+            {/* Credit card */}
+            <TouchableOpacity style={styles.fpI_Payment}
+                onPress={handleNotifi}>
+                <View style={styles.radioContainer}>
+                  {selectedOption === 'credit' && (
+                    <View style={styles.radioSelected} />
+                  )}
+                </View>
+                <Image style={styles.imgPayment} source={require("../../image/ic_credit.png")} />
+                <Text style={styles.txtPayment}>Thanh toán bằng thẻ tín dụng</Text>
             </TouchableOpacity>
         </View>
       </View>

@@ -1,5 +1,5 @@
 import { useNavigation, useRoute } from "@react-navigation/native";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   SafeAreaView,
   ScrollView,
@@ -10,10 +10,15 @@ import {
   View,
   Image,
   TouchableOpacity,
+  ToastAndroid,
 } from "react-native";
+import { addCart } from "./services/cart";
+import { getDetailUser } from "../(tabs)/services/cart";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
   const DetailScreen = () => {
     const [isExpanded, setIsExpanded] = useState(false);
+    const [user, setUser] = useState<any>({});
 
     const route = useRoute();
     const navigation = useNavigation();
@@ -22,6 +27,34 @@ import {
     const paragraphStyles = {
       
     }
+
+    const getUser = async () => {
+      const userId = await AsyncStorage.getItem("userId");
+      const resIdUser = await getDetailUser(userId);
+      setUser(resIdUser?.user);
+    }
+
+    const handleAddCart = async () => {
+      if (pet.idUser === user._id) {
+        ToastAndroid.show("Đây là sản phẩm của bạn !", ToastAndroid.SHORT);
+        return
+      }
+
+      const res = await addCart({
+        idUser: user._id,
+        idPet: pet._id,
+      });
+      if (res) {
+        ToastAndroid.show("Thêm vào giỏ hàng thành công !", ToastAndroid.SHORT);
+        navigation.navigate("CartScreen");
+      } else {
+        ToastAndroid.show("Thêm vào giỏ hàng thất bại !", ToastAndroid.SHORT);
+      }
+    }
+
+    useEffect(() => {
+      getUser();
+    } ,[]);
 
   return (
     <View style={styles.body}>
@@ -170,7 +203,7 @@ import {
             </TouchableOpacity>
           </View>
           <View style={styles.horizontalLine}></View>
-          <TouchableOpacity style={styles.addToCartButton}>
+          <TouchableOpacity style={styles.addToCartButton} onPress={handleAddCart}>
             <Text style={styles.addTitle}>Add to Cart</Text>
           </TouchableOpacity>
         </ScrollView>

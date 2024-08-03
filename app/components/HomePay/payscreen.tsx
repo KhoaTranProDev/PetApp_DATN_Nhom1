@@ -13,7 +13,7 @@ import React, { useEffect, useState } from "react";
 import { styles } from "../styles/payScreen";
 
 // data
-import { DataAddress, DataCart } from "../Data";
+import { DataAddress, DataCart } from "../Data/main";
 import { getListPayIdUser } from "../services/address";
 import { addPay } from "../services/pay";
 import { deleteIdCart, deleteManyCart } from "../services/cart";
@@ -74,6 +74,14 @@ const PayScreen: React.FC<Props> = ({ route, navigation }) => {
   };
 
   const handlePay = () => {
+    if (!addAddress[0]?.address) {
+      ToastAndroid.show(
+        "Vui lòng thêm địa chỉ nhận hàng trước khi thanh toán !",
+        ToastAndroid.SHORT
+      );
+      return;
+    }
+
     Alert.alert(
       `Cảnh báo !!!`,
       "Bạn xác nhận muốn thanh toán đơn hàng này không ?",
@@ -109,15 +117,15 @@ const PayScreen: React.FC<Props> = ({ route, navigation }) => {
   };
 
   const handleCloseWebView = async () => {
-    setShowWebView(false);
-    setWebViewUrl(null);
     const data = {
       total,
       idUser: user._id,
       moneyType: paymentOption,
       petId: listPayPet,
     };
-    await addPay(data);
+    console.log("data", data);
+    const res = await addPay(data);
+    console.log("res", res);
     await deleteManyCart(idCart);
     ToastAndroid.show("Thanh toán thành công", ToastAndroid.SHORT);
     navigation.replace("Home");
@@ -192,7 +200,7 @@ const PayScreen: React.FC<Props> = ({ route, navigation }) => {
               </TouchableOpacity>
             </View>
             <Text style={styles.txtUser}>
-              {listPickPet[0]?.idPet?.idUser?.name}
+              {listPickPet[0]?.idPet?.idUser?.name ?? "Khác"}
             </Text>
             <View style={styles.framePrice}>
               <Text style={styles.txtPrice}>
@@ -298,14 +306,10 @@ const PayScreen: React.FC<Props> = ({ route, navigation }) => {
         <View style={styles.viewCloseWebView}>
           <View style={styles.btnBack}>
             <TouchableOpacity onPress={handleCloseWebViewHuy}>
-              <Text style={styles.txtText}>
-                HỦY
-              </Text>
+              <Text style={styles.txtText}>HỦY</Text>
             </TouchableOpacity>
             <TouchableOpacity onPress={handleCloseWebView}>
-              <Text style={styles.txtText}>
-                LƯU
-              </Text>
+              <Text style={styles.txtText}>LƯU</Text>
             </TouchableOpacity>
           </View>
           <WebView source={{ uri: webViewUrl }} style={{ flex: 1 }} />

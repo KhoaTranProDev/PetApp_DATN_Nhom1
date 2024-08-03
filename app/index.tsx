@@ -19,8 +19,8 @@ import CartScreen from './(tabs)/cart';
 import PayScreen from './components/HomePay/payscreen';
 import { GetRouteCat } from './components/routeCat';
 import DetailProduct from './components/HomePay/products/DetailProduct';
-import MainPaymentType from './components/HomePay/paymentType';
-import AddDress from './components/HomePay/addDress';
+import MainPaymentType from './components/HomePay/paymentType/main';
+import AddDress from './components/HomePay/addDress/main';
 import UpdateAddress from './components/HomePay/addDress/updateAddress';
 import AddAddress from './components/HomePay/addDress/addAddress';
 import Cart from './(tabs)/cart'
@@ -71,6 +71,7 @@ function HomeFragment (){
       <Stack.Screen name='DetailsItemList' component={DetailsItemList}/>
       <Stack.Screen name='DetailCatList' component={DetailCatList}/>
       {/* <Stack.Screen name='DetailHamList' component={DetailHamList}/> */}
+      <Stack.Screen name='CartScreen' component={CatStack}/>
       <Stack.Screen name='DetailsScreen' component={DetailsScreen}/>
     </Stack.Navigator>
   )

@@ -49,12 +49,9 @@ const DetailProduct: React.FC<Props> = ({ navigation, route }) => {
 
   const renderProduct = (product: any) => (
     <Swipeable
-      key={product._id}
+      key={product?._id}
       renderRightActions={() => (
-        <TouchableOpacity
-          onPress={handleDelete}
-          style={styles.btnDelete}
-        >
+        <TouchableOpacity onPress={handleDelete} style={styles.btnDelete}>
           <Image
             style={styles.imgDelete}
             source={require("../../image/Delete_25px.png")}
@@ -62,7 +59,7 @@ const DetailProduct: React.FC<Props> = ({ navigation, route }) => {
         </TouchableOpacity>
       )}
     >
-      {product?.idPet?.idUser._id !== user?._id && (
+      {product?.idPet?.idUser?._id !== user?._id && (
         <View style={styles.frameProduct}>
           <Image
             style={styles.imgProduct}
@@ -102,12 +99,16 @@ const DetailProduct: React.FC<Props> = ({ navigation, route }) => {
 
   const renderGroup = ({ item }: { item: any }) => {
     return (
-      <View key={item.items[0].idPet.idUser._id}>
-        <Text style={styles.userHeader}>
-          {item?.items[0].idPet?.idUser?.name}
-        </Text>
-        {item.items.map((product: any) => renderProduct(product))}
-      </View>
+      <>
+        {item.items[0]?.idPet?.idUser?._id !== user?._id && (
+          <View key={item?.items[0]?.idPet?.idUser?._id}>
+            <Text style={styles.userHeader}>
+              {item?.items[0].idPet?.idUser?.name ?? "Khác"}
+            </Text>
+            {item.items.map((product: any) => renderProduct(product))}
+          </View>
+        )}
+      </>
     );
   };
 
