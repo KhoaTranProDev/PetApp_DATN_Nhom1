@@ -1,8 +1,8 @@
 import axios from "axios";
 
 
-// const API_URL = 'https://apipetapp.onrender.com/';
-const API_URL = 'http://192.168.2.209:3000/'; // Home
+const API_URL = 'https://apipetapp.onrender.com/';
+// const API_URL = 'http://192.168.2.209:3000/'; // Home
 
 const instance = axios.create({
     baseURL: API_URL,
