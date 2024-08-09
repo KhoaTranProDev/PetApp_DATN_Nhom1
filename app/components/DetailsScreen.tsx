@@ -12,13 +12,14 @@ import {
   TouchableOpacity,
   ToastAndroid,
 } from "react-native";
-import { addCart } from "./services/cart";
+import { addCart, getCartIdUser } from "./services/cart";
 import { getDetailUser } from "../(tabs)/services/cart";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
   const DetailScreen = () => {
     const [isExpanded, setIsExpanded] = useState(false);
     const [user, setUser] = useState<any>({});
+    const [checkCU, setCheckCU] = useState<any>({});
 
     const route = useRoute();
     const navigation = useNavigation();
@@ -32,11 +33,20 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
       const userId = await AsyncStorage.getItem("userId");
       const resIdUser = await getDetailUser(userId);
       setUser(resIdUser?.user);
+      const resCU = await getCartIdUser(resIdUser?.user._id);
+      const findCU = resCU.some((item: any) => item.idPet._id === pet._id);
+      setCheckCU(findCU);
+      // console.log(">>>>>>findCUfindCU ", findCU);
     }
 
     const handleAddCart = async () => {
       if (pet.idUser === user._id) {
         ToastAndroid.show("Đây là sản phẩm của bạn !", ToastAndroid.SHORT);
+        return
+      }
+
+      if (checkCU) {
+        ToastAndroid.show("Sản phẩm này đã thêm rồi !", ToastAndroid.SHORT);
         return
       }
 
