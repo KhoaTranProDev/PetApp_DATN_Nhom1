@@ -70,6 +70,8 @@ const CartScreens: React.FC<{ navigation: any }> = (props) => {
   const [listPickPet, setListPickPet] = useState<any>([]);
   const [refreshing, setRefreshing] = useState(false);
 
+  // console.log("cartData: ", cartData);
+
   const checkSoldItems = () => {
     for (let item of cartData) {
       if (item.idPet.status === "sold") {
