@@ -15,7 +15,7 @@ import VerifyOTP from './components/verifyotpcode';
 import SetPassword from './components/setpassword';
 import DetailsScreen from './components/DetailsScreen';
 import DetailsItemList from './components/DetailsItemList';
-import Cart from './(tabs)/cart'
+// import Cart from './(tabs)/cart'
 import DetailCatList from './components/DetailCatList';
 import DetailHamList from './components/DetailHamList';
 import SignUpDetail from './components/SignUpDetail';
@@ -35,13 +35,13 @@ function HomeScreen (){
           <Ionicons name='home' size={28} color={color} />
         )
       }}/>
-      <Tab.Screen name='Cart' component={Cart}
+      {/* <Tab.Screen name='Cart' component={Cart}
       options={{
         title: "Cart",
         tabBarIcon: ({color}) => (
           <Feather name='shopping-cart' size={28} color={color}/>
         )
-      }}/>
+      }}/> */}
       <Tab.Screen name='ProfileScreen' component={ProfileScreen}
       options={{
         title: "Profile",
