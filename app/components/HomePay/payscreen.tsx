@@ -17,7 +17,7 @@ import { DataAddress, DataCart } from "../Data/main";
 import { getListPayIdUser } from "../services/address";
 import { addPay } from "../services/pay";
 import { deleteIdCart, deleteManyCart } from "../services/cart";
-// import WebView from "react-native-webview";
+import * as WebBrowser from 'expo-web-browser';
 
 interface Props {
   route: any;
@@ -42,7 +42,7 @@ const PayScreen: React.FC<Props> = ({ route, navigation }) => {
   const listPayPet = listPickPet.map((item: any) => item.idPet._id);
   const idCart = listPickPet.map((item: any) => item._id);
 
-  console.log("selectedOption in PayScreen", paymentOption);
+  // console.log("selectedOption in PayScreen", paymentOption);
 
   useEffect(() => {
     if (route?.params?.selectedOption) {
@@ -73,7 +73,7 @@ const PayScreen: React.FC<Props> = ({ route, navigation }) => {
     return num.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1.");
   };
 
-  const handlePay = () => {
+  const handlePay = async () => {
     if (!addAddress[0]?.address) {
       ToastAndroid.show(
         "Vui lòng thêm địa chỉ nhận hàng trước khi thanh toán !",
@@ -81,7 +81,7 @@ const PayScreen: React.FC<Props> = ({ route, navigation }) => {
       );
       return;
     }
-
+  
     Alert.alert(
       `Cảnh báo !!!`,
       "Bạn xác nhận muốn thanh toán đơn hàng này không ?",
@@ -94,10 +94,14 @@ const PayScreen: React.FC<Props> = ({ route, navigation }) => {
           text: "Chấp nhận",
           onPress: async () => {
             if (paymentOption === "wallet") {
-              setShowWebView(true);
-              setWebViewUrl(
+              const result = await WebBrowser.openBrowserAsync(
                 "https://sandbox.vnpayment.vn/tryitnow/Home/CreateOrder"
               );
+              if (result.type === "cancel" || result.type === "dismiss") {
+                handleCloseWebViewHuy();
+              } else {
+                handleCloseWebView();
+              }
             } else {
               const data = {
                 total,
@@ -115,6 +119,7 @@ const PayScreen: React.FC<Props> = ({ route, navigation }) => {
       ]
     );
   };
+  
 
   const handleCloseWebView = async () => {
     const data = {
@@ -123,9 +128,7 @@ const PayScreen: React.FC<Props> = ({ route, navigation }) => {
       moneyType: paymentOption,
       petId: listPayPet,
     };
-    console.log("data", data);
     const res = await addPay(data);
-    console.log("res", res);
     await deleteManyCart(idCart);
     ToastAndroid.show("Thanh toán thành công", ToastAndroid.SHORT);
     navigation.replace("Home");
@@ -302,7 +305,7 @@ const PayScreen: React.FC<Props> = ({ route, navigation }) => {
           </TouchableOpacity>
         </View>
       </View>
-      {showWebView && webViewUrl && (
+      {/* {showWebView && webViewUrl && (
         <View style={styles.viewCloseWebView}>
           <View style={styles.btnBack}>
             <TouchableOpacity onPress={handleCloseWebViewHuy}>
@@ -312,9 +315,9 @@ const PayScreen: React.FC<Props> = ({ route, navigation }) => {
               <Text style={styles.txtText}>LƯU</Text>
             </TouchableOpacity>
           </View>
-          {/* <WebView source={{ uri: webViewUrl }} style={{ flex: 1 }} /> */}
+          <WebB source={{ uri: webViewUrl }} style={{ flex: 1 }} />
         </View>
-      )}
+      )} */}
     </View>
   );
 };

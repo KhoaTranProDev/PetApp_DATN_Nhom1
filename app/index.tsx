@@ -15,10 +15,17 @@ import VerifyOTP from './components/verifyotpcode';
 import SetPassword from './components/setpassword';
 import DetailsScreen from './components/DetailsScreen';
 import DetailsItemList from './components/DetailsItemList';
-// import Cart from './(tabs)/cart'
+import CartScreen from './(tabs)/cart';
+import PayScreen from './components/HomePay/payscreen';
+import DetailProduct from './components/HomePay/products/DetailProduct';
+import MainPaymentType from './components/HomePay/paymentType/main';
+import AddDress from './components/HomePay/addDress/main';
+import UpdateAddress from './components/HomePay/addDress/updateAddress';
+import AddAddress from './components/HomePay/addDress/addAddress';
+import Cart from './(tabs)/cart'
 import DetailCatList from './components/DetailCatList';
-import DetailHamList from './components/DetailHamList';
-import SignUpDetail from './components/SignUpDetail';
+import WebView from 'react-native-webview';
+import { GetRouteCat } from './components/routeCat';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -35,13 +42,15 @@ function HomeScreen (){
           <Ionicons name='home' size={28} color={color} />
         )
       }}/>
-      {/* <Tab.Screen name='Cart' component={Cart}
-      options={{
+      <Tab.Screen name='CatStack' component={CatStack}
+        options={({ route }) => ({
         title: "Cart",
         tabBarIcon: ({color}) => (
           <Feather name='shopping-cart' size={28} color={color}/>
-        )
-      }}/> */}
+        ),
+        tabBarStyle: { display: GetRouteCat(route) },
+        headerShown: false,
+      })}/>
       <Tab.Screen name='ProfileScreen' component={ProfileScreen}
       options={{
         title: "Profile",
@@ -56,13 +65,31 @@ function HomeScreen (){
 function HomeFragment (){
   return(
     <Stack.Navigator
-    initialRouteName='Profile'
+    initialRouteName='Home'
     screenOptions={{headerShown: false}}>
       <Stack.Screen name='Home' component={Home}/>
       <Stack.Screen name='DetailsItemList' component={DetailsItemList}/>
       <Stack.Screen name='DetailCatList' component={DetailCatList}/>
-      <Stack.Screen name='DetailHamList' component={DetailHamList}/>
+      {/* <Stack.Screen name='DetailHamList' component={DetailHamList}/> */}
+      <Stack.Screen name='CartScreen' component={CatStack}/>
       <Stack.Screen name='DetailsScreen' component={DetailsScreen}/>
+    </Stack.Navigator>
+  )
+}
+
+function CatStack (){
+  return(
+    <Stack.Navigator
+    initialRouteName='CartScreen'
+    screenOptions={{headerShown: false}}>
+      <Stack.Screen name='CartScreen' component={CartScreen}/>
+      <Stack.Screen name='PayScreen' component={PayScreen}/>
+      <Stack.Screen name='DetailProduct' component={DetailProduct}/>
+      <Stack.Screen name='MainPaymentType' component={MainPaymentType}/>
+      <Stack.Screen name='AddDress' component={AddDress}/>
+      <Stack.Screen name='UpdateAddress' component={UpdateAddress}/>
+      <Stack.Screen name='AddAddress' component={AddAddress}/>
+      <Stack.Screen name='Home' component={HomeFragment}/>
     </Stack.Navigator>
   )
 }
@@ -86,7 +113,6 @@ const Page = () => {
       <Stack.Navigator initialRouteName='Login' screenOptions={{headerShown: false}}>
         <Stack.Screen name='Login' component={Login}/>
         <Stack.Screen name='SignUp' component={SignUp}/>
-        <Stack.Screen name='SignUpDetail' component={SignUpDetail}/>
         <Stack.Screen name='ForgotPass' component={ForgotPass}/>
         <Stack.Screen name='VerifyOTP' component={VerifyOTP}/>
         <Stack.Screen name='SetPassword' component={SetPassword}/>
