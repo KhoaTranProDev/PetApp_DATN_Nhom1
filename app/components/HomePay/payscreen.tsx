@@ -17,7 +17,7 @@ import { DataAddress, DataCart } from "../Data/main";
 import { getListPayIdUser } from "../services/address";
 import { addPay } from "../services/pay";
 import { deleteIdCart, deleteManyCart } from "../services/cart";
-import WebView from "react-native-webview";
+// import WebView from "react-native-webview";
 
 interface Props {
   route: any;
@@ -312,7 +312,7 @@ const PayScreen: React.FC<Props> = ({ route, navigation }) => {
               <Text style={styles.txtText}>LƯU</Text>
             </TouchableOpacity>
           </View>
-          <WebView source={{ uri: webViewUrl }} style={{ flex: 1 }} />
+          {/* <WebView source={{ uri: webViewUrl }} style={{ flex: 1 }} /> */}
         </View>
       )}
     </View>
