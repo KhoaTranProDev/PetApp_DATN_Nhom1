@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thống kê doanh số đơn hàng</title>
+    <script src="./app.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" />
+    <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+    <header class="header">
+        <div class="logo">
+          <a href="#">Pet App</a>
+          <div class="search_box">
+            <input type="text" placeholder="Search Pet App">
+            <i class="fa-sharp fa-solid fa-magnifying-glass"></i>
+          </div>
+        </div>
+    
+        <div class="header-icons">
+          <i class="fas fa-bell"></i>
+        </div>
+      </header>
+      <div class="container">
+        <div class="main-body">
+          <h2>Dashboard</h2>
+          <div class="promo_card">
+            <h1>Thống kê sản phẩm yêu thích dựa trên số lượng bán ra</h1>
+          </div>
+          <div class="flex">
+            <div class="flexleft">
+            <canvas id="salesChart" width="500" height="200"></canvas>
+        </div>
+        <div class="flexright">
+        <div class="sidebar">
+          <h4>Tổng tiền đã bán</h4>
+          <div class="balance">
+            <i class="fas fa-dollar icon"></i>
+            <div class="info">
+              <h5>Dollar</h5>
+              <span id="totalBalanceDollar"><i class="fas fa-dollar"></i>0</span>
+            </div>
+          </div>
+          
+          <div class="balance">
+            <i class="fa-solid fa-rupee-sign icon"></i>
+            <div class="info">
+              <h5>PKR</h5>
+              <span id="totalBalancePKR"><i class="fa-solid fa-rupee-sign"></i>0</span>
+            </div>
+          </div>
+    
+          <div class="balance">
+            <i class="fas fa-euro icon"></i>
+            <div class="info">
+              <h5>Euro</h5>
+              <span id="totalBalanceEuro"><i class="fas fa-euro"></i>0</span>
+            </div>
+          </div>
+    
+          <div class="balance">
+            <i class="fa-solid fa-indian-rupee-sign icon"></i>
+            <div class="info">
+              <h5>INR</h5>
+              <span id="totalBalanceINR"><i class="fa-solid fa-indian-rupee-sign"></i>0</span>
+            </div>
+          </div>
+    
+          <div class="balance">
+            <i class="fa-solid fa-sterling-sign icon"></i>
+            <div class="info">
+              <h5>Pound</h5>
+              <span id="totalBalancePound"><i class="fa-solid fa-sterling-sign"></i>0</span>
+            </div>
+          </div>
+          <div class="balance">
+            <i class="fa-solid fa-dong-sign icon"></i>
+            <div class="info">
+              <h5>VND</h5>
+              <span id="totalBalanceVND"></i>0</span>
+            </div>
+          </div>
+
+        </div>
+    </div>
+    </div>
+      </div>
+    <script src="app.js"></script>
+</body>
+</html>
